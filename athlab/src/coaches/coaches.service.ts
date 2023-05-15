@@ -15,18 +15,30 @@ export class CoachesService {
         password: createCoachDto.password,
         name: createCoachDto.name
       }
-    })
+    });
   }
 
   async findAll() {
-    return await this.prisma.coach.findMany();
+    return await this.prisma.coach.findMany({
+      select: {
+        id: true,
+        name: true
+      }
+    });
   }
 
   async findOne(id: number) { 
     return await this.prisma.coach.findUnique({
       where:{id},
-      include:{
-        athletes: true
+      select: {
+        id: true,
+        name: true,
+        athletes: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
       }
     });
   }
