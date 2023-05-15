@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Admin, PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    const config = new ConfigService();
-    console.log(config.get('DBURL'));
-    return 'Hello World!';
+  async getHello(): Promise<Admin[]> {
+    const prisma = new PrismaClient()
+    const admin = await prisma.admin.create({
+      data: {
+        email: "admin2@gmail.com",
+        name: "Donnie",
+        password: "not hashed lol"
+      }
+    });
+    return prisma.admin.findMany();
   }
 }
