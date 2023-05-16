@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, UnauthorizedException } from '@nestjs/common';
 import { AthletesService } from './athletes.service';
 import { CreateAthleteDto } from './dto/create-athlete.dto';
 import { UpdateAthleteDto } from './dto/update-athlete.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
 @Controller('athletes')
 export class AthletesController {
@@ -12,8 +13,11 @@ export class AthletesController {
     return this.athletesService.create(createAthleteDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll() {
+  async findAll(@Request() req) {
+    console.log
+    if( req.user.type !== "admin" ) throw new UnauthorizedException();
     return await this.athletesService.findAll();
   }
   
