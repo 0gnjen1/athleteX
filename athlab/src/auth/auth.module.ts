@@ -7,12 +7,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { LocalAthleteStrategy } from './strategies/local.athlete.strategy';
 import { LocalCoachStrategy } from './strategies/local.coach.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { LocalAdminGuard } from './guards/local.admin.guard';
+import { LocalAdminStrategy } from './strategies/local.admin.strategy';
 
 @Module({
   providers:    [AuthService,
                   PrismaService,
                   LocalAthleteStrategy,
                   LocalCoachStrategy,
+                  LocalAdminStrategy,
                   JwtStrategy],
   imports:      [PassportModule,
                   JwtModule.register({

@@ -39,6 +39,22 @@ export class AuthService {
         return null;
     }
 
+    async validateAdmin(email: string, password: string){
+        const admin = await this.prisma.admin.findUnique({
+            where: {
+                email: email
+            }
+        })
+        if(admin.password === password){
+            const result = {
+                id: admin.id,
+                type: "admin"
+            }
+            return result;
+        }
+        return null;
+    }
+
     async login(id: number, type: string){
         const payload = {
             id: id,
