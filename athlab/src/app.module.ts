@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CoachesModule } from './coaches/coaches.module';
 import { AthletesModule } from './athletes/athletes.module';
 import { AuthModule } from './auth/auth.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports:      [ConfigModule.forRoot({
@@ -13,7 +14,8 @@ import { AuthModule } from './auth/auth.module';
                   }),
                   CoachesModule,
                   AthletesModule,
-                  AuthModule],
+                  AuthModule,
+                  AdminModule],
   controllers:  [AppController],
   providers:    [AppService],
 })
