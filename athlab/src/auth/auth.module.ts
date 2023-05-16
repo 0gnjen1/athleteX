@@ -9,16 +9,17 @@ import { LocalCoachStrategy } from './strategies/local.coach.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
-  providers: [AuthService,
-              PrismaService,
-              LocalAthleteStrategy,
-              LocalCoachStrategy,
-              JwtStrategy],
-  imports: [PassportModule,
-            JwtModule.register({
-              secret: process.env.JWTKEY,
-              signOptions: { expiresIn: '2592000s' } // 30 days
-            })],
-  controllers: [AuthController]
+  providers:    [AuthService,
+                  PrismaService,
+                  LocalAthleteStrategy,
+                  LocalCoachStrategy,
+                  JwtStrategy],
+  imports:      [PassportModule,
+                  JwtModule.register({
+                    secret: process.env.JWTKEY,
+                    signOptions: { expiresIn: '2592000s' } // 30 days
+                  })],
+  controllers:  [AuthController],
+  exports:      [AuthModule]
 })
 export class AuthModule {}

@@ -7,14 +7,14 @@ import { AthletesModule } from './athletes/athletes.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({
-    envFilePath: '.env',
-    isGlobal: true
-  }),
-  CoachesModule,
-  AthletesModule,
-  AuthModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports:      [ConfigModule.forRoot({
+                    envFilePath: '.env',
+                    isGlobal: true
+                  }),
+                  CoachesModule,
+                  AthletesModule,
+                  AuthModule],
+  controllers:  [AppController],
+  providers:    [AppService],
 })
 export class AppModule {}
