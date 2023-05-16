@@ -10,13 +10,13 @@ export class AuthController {
     @UseGuards(LocalAthleteGuard)
     @Post('athlete/login')
     athleteLogin(@Request() req){
-        return req.user;
+        return this.authService.login(req.user.id, req.user.type);
     }
 
     @UseGuards(LocalCoachGuard)
     @Post('coach/login')
     coachLogin(@Request() req){
-        return req.user;
+        return this.authService.login(req.user.id, req.user.type);
     }
 
 }
