@@ -22,19 +22,22 @@ export class AdminController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string, @Request() req) {
+    if(req.user.type !== "admin") throw new UnauthorizedException();
     return await this.adminService.findOne(+id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateAdminDto: UpdateAdminDto) {
+  async update(@Param('id') id: string, @Body() updateAdminDto: UpdateAdminDto, @Request() req) {
+    if(req.user.type !== "admin") throw new UnauthorizedException();
     return await this.adminService.update(+id, updateAdminDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string, @Request() req) {
+    if(req.user.type !== "admin") throw new UnauthorizedException();
     return await this.adminService.remove(+id);
   }
 
