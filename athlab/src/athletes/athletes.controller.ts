@@ -16,7 +16,6 @@ export class AthletesController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Request() req) {
-    console.log
     if( req.user.type !== "admin" ) throw new UnauthorizedException();
     return await this.athletesService.findAll();
   }
@@ -37,7 +36,7 @@ export class AthletesController {
   }
   
   @Post(':athleteid/setcoach/:coachid')
-  async setCoach(@Param('athleteid') athleteid: string, @Param('coachid') coachid: string,){
+  async setCoach(@Param('athleteid') athleteid: string, @Param('coachid') coachid: string){
     return await this.athletesService.setCoach(+athleteid, +coachid);
   }
 

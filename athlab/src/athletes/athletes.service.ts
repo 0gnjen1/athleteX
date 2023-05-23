@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAthleteDto } from './dto/create-athlete.dto';
 import { UpdateAthleteDto } from './dto/update-athlete.dto';
 import { PrismaService } from '../prisma.service';
@@ -9,94 +9,122 @@ export class AthletesService {
   constructor(private prisma: PrismaService){}
 
   async create(createAthleteDto: CreateAthleteDto) {
-    return await this.prisma.athlete.create({
-      data: {
-        email: createAthleteDto.email,
-        password: createAthleteDto.password,
-        name: createAthleteDto.name,
-        coach_id: null
-      }
-    });
+    try{
+      return await this.prisma.athlete.create({
+        data: {
+          email: createAthleteDto.email,
+          password: createAthleteDto.password,
+          name: createAthleteDto.name,
+          coach_id: null
+        }
+      });
+    }catch(e){
+      return new BadRequestException();
+    }
   }
   
   async findAll() {
-    return await this.prisma.athlete.findMany({
-      select: {
-        id: true,
-        name: true
-      }
-    });
+    try{
+      return await this.prisma.athlete.findMany({
+        select: {
+          id: true,
+          name: true
+        }
+      });
+    }catch(e){
+      return new BadRequestException();
+    }
   }
   
   async findOne(id: number) {
-    return await this.prisma.athlete.findUnique({
-      where:{id},
-      select:{
-        id: true,
-        name: true,
-        coach: {
-          select: {
-            id: true,
-            name: true
+    try{
+      return await this.prisma.athlete.findUnique({
+        where:{id},
+        select:{
+          id: true,
+          name: true,
+          coach: {
+            select: {
+              id: true,
+              name: true
+            }
           }
         }
-      }
-    }); 
+      }); 
+    }catch(e){
+      return new BadRequestException();
+    }
   }
   
   async update(id: number, updateAthleteDto: UpdateAthleteDto) {
-    return await this.prisma.athlete.update({
-      where: {
-        id: id
-      },
-      data: {
-        email: updateAthleteDto.email,
-        password: updateAthleteDto.password,
-        name: updateAthleteDto.name
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true
-      }
-    }); 
+    try{
+      return await this.prisma.athlete.update({
+        where: {
+          id: id
+        },
+        data: {
+          email: updateAthleteDto.email,
+          password: updateAthleteDto.password,
+          name: updateAthleteDto.name
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true
+        }
+      }); 
+    }catch(e){
+      return new BadRequestException();
+    }
   }
   
   async remove(id: number) {
-    await this.prisma.athlete.delete({
-      where: {
-        id: id
-      }
-    })
-    return 'removed athlete';
+    try{
+      await this.prisma.athlete.delete({
+        where: {
+          id: id
+        }
+      })
+      return 'removed athlete';
+    }catch(e){
+      return new BadRequestException();
+    }
   }
 
   async setCoach(athleteid: number, coachid: number){
-    await this.prisma.coach.update({
-      where: {
-        id: coachid
-      },
-      data: {
-        athletes: {
-          connect: {
-            id: athleteid,
+    try{
+      await this.prisma.coach.update({
+        where: {
+          id: coachid
+        },
+        data: {
+          athletes: {
+            connect: {
+              id: athleteid,
+            },
           },
         },
-      },
-    })
-    return 'updated coach';
+      })
+      return 'updated coach';
+    }catch(e){
+      return new BadRequestException();
+    }
   }
 
   async removeCoach(id: number){
-    await this.prisma.athlete.update({
-      where: {
-        id: id
-      },
-      data: {
-        coach_id: null
-      }
-    })
-    return 'removed coach';
+    try{
+      await this.prisma.athlete.update({
+        where: {
+          id: id
+        },
+        data: {
+          coach_id: null
+        }
+      })
+      return 'removed coach';
+    }catch(e){
+      return new BadRequestException();
+    }
   }
   
 }
