@@ -12,16 +12,16 @@ import { LocalAdminStrategy } from './strategies/local.admin.strategy';
 
 @Module({
   providers:    [AuthService,
-                  PrismaService,
-                  LocalAthleteStrategy,
-                  LocalCoachStrategy,
-                  LocalAdminStrategy,
-                  JwtStrategy],
+                    PrismaService,
+                    LocalAthleteStrategy,
+                    LocalCoachStrategy,
+                    LocalAdminStrategy,
+                    JwtStrategy],
   imports:      [PassportModule,
-                  JwtModule.register({
-                    secret: process.env.JWTKEY,
-                    signOptions: { expiresIn: '2592000s' } // 30 days
-                  })],
+                    JwtModule.register({
+                        secret: process.env.JWTKEY,
+                        signOptions: { expiresIn: '2592000s' } // 30 days
+                    })],
   controllers:  [AuthController],
   exports:      [AuthModule]
 })

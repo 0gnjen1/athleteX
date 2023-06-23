@@ -6,6 +6,6 @@ import { PrismaService } from 'src/prisma.service';
 @Module({
   controllers:  [AthletesController],
   providers:    [AthletesService,
-                  PrismaService]
+                    PrismaService]
 })
 export class AthletesModule {}

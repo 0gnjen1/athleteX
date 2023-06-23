@@ -4,7 +4,8 @@ import { CoachesController } from './coaches.controller';
 import { PrismaService } from 'src/prisma.service';
 
 @Module({
-  controllers: [CoachesController],
-  providers: [CoachesService, PrismaService]
+  controllers:  [CoachesController],
+  providers:    [CoachesService,
+                    PrismaService]
 })
 export class CoachesModule {}

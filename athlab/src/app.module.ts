@@ -9,13 +9,13 @@ import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports:      [ConfigModule.forRoot({
-                    envFilePath: '.env',
-                    isGlobal: true
-                  }),
-                  CoachesModule,
-                  AthletesModule,
-                  AuthModule,
-                  AdminModule],
+                        envFilePath: '.env',
+                        isGlobal: true
+                    }),
+                    CoachesModule,
+                    AthletesModule,
+                    AuthModule,
+                    AdminModule],
   controllers:  [AppController],
   providers:    [AppService],
 })
