@@ -1,9 +1,7 @@
 # _athleteX_
 ### A web application for athletes and coaches
 #### that can assist in easy and effective communication!
-#####
-#####
-
+##
 #### _"But, what can it do?"_
 #### &nbsp;&nbsp;&nbsp;&nbsp;You might ask...
 #### &nbsp;&nbsp;&nbsp;&nbsp;Let me tell you!
