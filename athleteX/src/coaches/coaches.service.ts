@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateCoachDto } from './dto/create-coach.dto';
 import { UpdateCoachDto } from './dto/update-coach.dto';
 import { PrismaService } from '../prisma.service';
 import * as bcrypt from 'bcrypt';
+import { throwError } from 'rxjs';
 
 @Injectable()
 export class CoachesService {
@@ -20,50 +21,86 @@ export class CoachesService {
         });
     }
 
-    async findAll() {
-        return await this.prisma.coach.findMany({
-            select: {
-                id: true,
-                name: true
-            }
-        });
+    async findAll(usertype: string) {
+        if(usertype === 'admin'){
+            return await this.prisma.coach.findMany({
+                select: {
+                    id: true,
+                    name: true
+                }
+            });
+        }
+        throw new UnauthorizedException()
     }
 
-    async findOne(id: number) { 
-        return await this.prisma.coach.findUnique({
-            where:{id},
-            select: {
-                id: true,
-                name: true,
-                athletes: {
-                    select: {
-                        id: true,
-                        name: true
+    async findOne(userType: string, userId: number, queryId: number) {
+        if(userType === 'admin' || (userType === 'coach' && userId === queryId)){
+            return await this.prisma.coach.findUnique({
+                where:{
+                    id: queryId
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    athletes: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
                     }
                 }
+            });
+        }
+        if(userType === 'athlete'){
+            const athlete = await this.prisma.athlete.findUnique({
+                where: {
+                    id: userId
+                },
+                select: {
+                    coach_id: true
+                }
+            });
+            if(athlete.coach_id === queryId){
+                return await this.prisma.coach.findUnique({
+                    where: {
+                        id: queryId
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                    }
+                })
             }
-        });
+        }
+        throw new UnauthorizedException();
     }
 
-    async update(id: number, updateCoachDto: UpdateCoachDto) {
-        return await this.prisma.coach.update({
-            where: {
-                id: id
-            },
-            data: {
-                email: updateCoachDto.email,
-                password: updateCoachDto.password,
-                name: updateCoachDto.name
-            }
-        });
+    async update(userType: string, userId: number, queryId: number, updateCoachDto: UpdateCoachDto) {
+        if(userType === 'admin' || (userType === 'coach' && userId === queryId)){
+            return await this.prisma.coach.update({
+                where: {
+                    id: queryId
+                },
+                data: {
+                    email: updateCoachDto.email,
+                    password: updateCoachDto.password,
+                    name: updateCoachDto.name
+                }
+            });
+        }
+        throw new UnauthorizedException();
     }
 
-    async remove(id: number) {
-        return await this.prisma.coach.delete({
-            where: {
-                id: id
-            }
-        }) 
+    async remove(userType: string, userId: number, queryId: number) {
+        if(userType === 'admin' || (userType === 'coach' && userId === queryId)){
+            return await this.prisma.coach.delete({
+                where: {
+                    id: queryId
+                }
+            })
+        }
+        throw new UnauthorizedException();
     }
-    
+
 }
