@@ -2,129 +2,103 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAthleteDto } from './dto/create-athlete.dto';
 import { UpdateAthleteDto } from './dto/update-athlete.dto';
 import { PrismaService } from '../prisma.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AthletesService {
 
-  constructor(private prisma: PrismaService){}
+    constructor(private prisma: PrismaService){}
 
-  async create(createAthleteDto: CreateAthleteDto) {
-    try{
-      return await this.prisma.athlete.create({
-        data: {
-          email: createAthleteDto.email,
-          password: createAthleteDto.password,
-          name: createAthleteDto.name,
-          coach_id: null
-        }
-      });
-    }catch(e){
-      return new BadRequestException();
-    }
-  }
-  
-  async findAll() {
-    try{
-      return await this.prisma.athlete.findMany({
-        select: {
-          id: true,
-          name: true
-        }
-      });
-    }catch(e){
-      return new BadRequestException();
-    }
-  }
-  
-  async findOne(id: number) {
-    try{
-      return await this.prisma.athlete.findUnique({
-        where:{id},
-        select:{
-          id: true,
-          name: true,
-          coach: {
-            select: {
-              id: true,
-              name: true
+    async create(createAthleteDto: CreateAthleteDto) {
+        const pwdhash = bcrypt.hashSync(createAthleteDto.password, 10);
+        return await this.prisma.athlete.create({
+            data: {
+                email: createAthleteDto.email,
+                password: pwdhash,
+                name: createAthleteDto.name,
+                coach_id: null
             }
-          }
-        }
-      }); 
-    }catch(e){
-      return new BadRequestException();
+        });
     }
-  }
   
-  async update(id: number, updateAthleteDto: UpdateAthleteDto) {
-    try{
-      return await this.prisma.athlete.update({
-        where: {
-          id: id
-        },
-        data: {
-          email: updateAthleteDto.email,
-          password: updateAthleteDto.password,
-          name: updateAthleteDto.name
-        },
-        select: {
-          id: true,
-          email: true,
-          name: true
-        }
-      }); 
-    }catch(e){
-      return new BadRequestException();
+    async findAll() {
+        return await this.prisma.athlete.findMany({
+            select: {
+                id: true,
+                name: true
+            }
+        });
     }
-  }
   
-  async remove(id: number) {
-    try{
-      await this.prisma.athlete.delete({
-        where: {
-          id: id
-        }
-      })
-      return 'removed athlete';
-    }catch(e){
-      return new BadRequestException();
+    async findOne(id: number) {
+        return await this.prisma.athlete.findUnique({
+            where:{id},
+            select:{
+                id: true,
+                name: true,
+                coach: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            }
+        }); 
     }
-  }
-
-  async setCoach(athleteid: number, coachid: number){
-    try{
-      await this.prisma.coach.update({
-        where: {
-          id: coachid
-        },
-        data: {
-          athletes: {
-            connect: {
-              id: athleteid,
+  
+    async update(id: number, updateAthleteDto: UpdateAthleteDto) {
+        return await this.prisma.athlete.update({
+            where: {
+                id: id
             },
-          },
-        },
-      })
-      return 'updated coach';
-    }catch(e){
-      return new BadRequestException();
+            data: {
+                email: updateAthleteDto.email,
+                password: updateAthleteDto.password,
+                name: updateAthleteDto.name
+            },
+            select: {
+                id: true,
+                email: true,
+                name: true
+            }
+        }); 
     }
-  }
+  
+    async remove(id: number) {
+        await this.prisma.athlete.delete({
+            where: {
+                id: id
+            }
+        })
+      return 'removed athlete';
+    }
 
-  async removeCoach(id: number){
-    try{
-      await this.prisma.athlete.update({
-        where: {
-          id: id
-        },
-        data: {
-          coach_id: null
-        }
-      })
-      return 'removed coach';
-    }catch(e){
-      return new BadRequestException();
+    async setCoach(athleteid: number, coachid: number){
+        await this.prisma.coach.update({
+            where: {
+                id: coachid
+            },
+            data: {
+                athletes: {
+                    connect: {
+                        id: athleteid,
+                    },
+                },
+            },
+        })
+      return 'updated coach';
     }
-  }
+
+    async removeCoach(id: number){
+        await this.prisma.athlete.update({
+            where: {
+                id: id
+            },
+            data: {
+                coach_id: null
+            }
+        })
+        return 'removed coach';
+    }
   
 }

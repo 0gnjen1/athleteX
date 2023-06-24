@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +13,7 @@ export class AuthService {
                 email: email
             }
         })
-        if(athlete.password === password){
+        if(bcrypt.compareSync(password, athlete.password)){
             const result = {
                 id: athlete.id,
                 type: "athlete"
@@ -29,7 +29,7 @@ export class AuthService {
                 email: email
             }
         })
-        if(coach.password === password){
+        if(bcrypt.compareSync(password, coach.password)){
             const result = {
                 id: coach.id,
                 type: "coach"
@@ -45,7 +45,7 @@ export class AuthService {
                 email: email
             }
         })
-        if(admin.password === password){
+        if(bcrypt.compareSync(password, admin.password)){
             const result = {
                 id: admin.id,
                 type: "admin"
