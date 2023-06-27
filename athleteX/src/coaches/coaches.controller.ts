@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, UnauthorizedException, Query } from '@nestjs/common';
 import { CoachesService } from './coaches.service';
 import { CreateCoachDto } from './dto/create-coach.dto';
 import { UpdateCoachDto } from './dto/update-coach.dto';
@@ -15,8 +15,8 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    findAll(@Request() req) {
-        return this.coachesService.findAll(req.user.type);
+    findAll(@Request() req, @Query('page') page, @Query('pgsize') pgsize) {
+        return this.coachesService.findAll(req.user.type, +page, +pgsize);
     }
 
     @UseGuards(JwtAuthGuard)

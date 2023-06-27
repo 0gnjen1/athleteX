@@ -21,9 +21,11 @@ export class CoachesService {
         });
     }
 
-    async findAll(usertype: string) {
+    async findAll(usertype: string, page: number, pgsize: number) {
         if(usertype === 'admin'){
             return await this.prisma.coach.findMany({
+                skip: (page-1)*pgsize,
+                take: pgsize,
                 select: {
                     id: true,
                     name: true
