@@ -21,8 +21,16 @@ export class AdminService {
         return admin;
     }
 
-    async findAll() {
-        return await this.prisma.admin.findMany();
+    async findAll(page: number, pgsize: number) {
+        return await this.prisma.admin.findMany({
+            skip: (page-1)*pgsize,
+            take: pgsize,
+            select: {
+                id: true,
+                email: true,
+                name: true
+            }
+        });
     }
 
     async findOne(id: number) {

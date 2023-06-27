@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, UnauthorizedException, Query } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
@@ -15,9 +15,9 @@ export class AdminController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@Request() req) {
+  async findAll(@Request() req, @Query('page') page, @Query('pgsize') pgsize) {
     if(req.user.type !== "admin") throw new UnauthorizedException();
-    return await this.adminService.findAll();
+    return await this.adminService.findAll(+page, +pgsize);
   }
 
   @UseGuards(JwtAuthGuard)
