@@ -84,8 +84,6 @@ export class CoachesService {
                     id: queryId
                 },
                 data: {
-                    email: updateCoachDto.email,
-                    password: updateCoachDto.password,
                     name: updateCoachDto.name
                 }
             });

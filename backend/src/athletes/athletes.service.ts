@@ -52,8 +52,6 @@ export class AthletesService {
                 id: id
             },
             data: {
-                email: updateAthleteDto.email,
-                password: updateAthleteDto.password,
                 name: updateAthleteDto.name
             },
             select: {
