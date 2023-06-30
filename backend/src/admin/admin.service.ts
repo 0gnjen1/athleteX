@@ -6,7 +6,8 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AdminService {
-  constructor(private prisma: PrismaService){}
+
+    constructor(private prisma: PrismaService){}
 
     async create(createAdminDto: CreateAdminDto) {
         if( createAdminDto.key !== process.env.ADMINKEY ) throw new UnauthorizedException();
