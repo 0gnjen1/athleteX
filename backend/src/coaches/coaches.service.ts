@@ -3,7 +3,6 @@ import { CreateCoachDto } from './dto/create-coach.dto';
 import { UpdateCoachDto } from './dto/update-coach.dto';
 import { PrismaService } from '../prisma.service';
 import * as bcrypt from 'bcrypt';
-import { throwError } from 'rxjs';
 
 @Injectable()
 export class CoachesService {

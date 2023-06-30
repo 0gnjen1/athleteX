@@ -6,6 +6,7 @@ import { CoachesModule } from './coaches/coaches.module';
 import { AthletesModule } from './athletes/athletes.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports:      [ConfigModule.forRoot({
@@ -15,7 +16,8 @@ import { AdminModule } from './admin/admin.module';
                     CoachesModule,
                     AthletesModule,
                     AuthModule,
-                    AdminModule],
+                    AdminModule,
+                    NotificationsModule],
   controllers:  [AppController],
   providers:    [AppService],
 })
