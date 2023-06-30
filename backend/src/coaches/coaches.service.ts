@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateCoachDto } from './dto/create-coach.dto';
 import { UpdateCoachDto } from './dto/update-coach.dto';
 import { PrismaService } from '../prisma.service';
 import * as bcrypt from 'bcrypt';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class CoachesService {
@@ -20,11 +21,42 @@ export class CoachesService {
         });
     }
 
-    async findAll(userType: string, page: number, pgsize: number) {
+    async findAll(userType: string, userId: number, page: number, pgsize: number) {
         if(userType === 'admin'){
             return await this.prisma.coach.findMany({
                 skip: (page-1)*pgsize,
                 take: pgsize,
+                select: {
+                    id: true,
+                    name: true
+                }
+            });
+        }
+        if(userType === 'coach'){
+            return await this.prisma.coach.findUnique({
+                where: {
+                    id: userId
+                },
+                select: {
+                    id: true,
+                    name: true
+                }
+            });
+        }
+        if(userType === 'athlete'){
+            const athlete = await this.prisma.athlete.findUnique({
+                where: {
+                    id: userId
+                },
+                select: {
+                    coach_id: true
+                }
+            });
+            if(athlete.coach_id == null) throw new NotFoundException();
+            return await this.prisma.coach.findUnique({
+                where: {
+                    id: athlete.coach_id
+                },
                 select: {
                     id: true,
                     name: true

@@ -16,7 +16,7 @@ export class CoachesController {
     @UseGuards(JwtAuthGuard)
     @Get()
     findAll(@Request() req, @Query('page') page, @Query('pgsize') pgsize) {
-        return this.coachesService.findAll(req.user.type, +page, +pgsize);
+        return this.coachesService.findAll(req.user.type, +req.user.id, +page, +pgsize);
     }
 
     @UseGuards(JwtAuthGuard)
