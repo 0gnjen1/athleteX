@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, UnauthorizedException, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query, DefaultValuePipe, ParseIntPipe } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
@@ -16,26 +16,32 @@ export class AdminController {
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    async findAll(@Request() req, @Query('page') page, @Query('pgsize') pgsize) {
+    async findAll(  @Request() req,
+                    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+                    @Query('pgsize', new DefaultValuePipe(10), ParseIntPipe) pgsize: number) {
         return await this.adminService.findAll(req.user.type, +page, +pgsize);
     }
 
     @UseGuards(JwtAuthGuard)
     @Get(':id')
-    async findOne(@Param('id') queryId: string, @Request() req) {
-        return await this.adminService.findOne(req.user.type, +queryId);
+    async findOne(  @Request() req,
+                    @Param('id', ParseIntPipe) queryId: number) {
+        return await this.adminService.findOne(req.user.type, queryId);
     }
 
     @UseGuards(JwtAuthGuard)
     @Patch(':id')
-    async update(@Request() req, @Param('id') queryId: string, @Body() updateAdminDto: UpdateAdminDto) {
-        return await this.adminService.update(req.user.type, +queryId, updateAdminDto);
+    async update(   @Request() req,
+                    @Param('id', ParseIntPipe) queryId: number,
+                    @Body() updateAdminDto: UpdateAdminDto) {
+        return await this.adminService.update(req.user.type, queryId, updateAdminDto);
     }
 
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
-    async remove(@Request() req, @Param('id') queryId: string) {
-        return await this.adminService.remove(req.user.type, +queryId);
+    async remove(   @Request() req,
+                    @Param('id', ParseIntPipe) queryId: number) {
+        return await this.adminService.remove(req.user.type, queryId);
     }
 
 }

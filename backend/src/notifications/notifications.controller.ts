@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
@@ -11,32 +11,39 @@ export class NotificationsController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    create(@Req() req, @Body() createNotificationDto: CreateNotificationDto) {
-        return this.notificationsService.create(req.user.type, req.user.id, createNotificationDto);
+    create( @Req() req,
+            @Body() createNotificationDto: CreateNotificationDto) {
+        return this.notificationsService.create(req.user.type, +req.user.id, createNotificationDto);
     }
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    async findAll(@Req() req, @Query('page') page, @Query('pgsize') pgsize) {
-        return await this.notificationsService.findAll(req.user.type, +req.user.id, +page, +pgsize);
+    async findAll(  @Req() req,
+                    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+                    @Query('pgsize', new DefaultValuePipe(10), ParseIntPipe) pgsize: number) {
+        return await this.notificationsService.findAll(req.user.type, +req.user.id, page, pgsize);
     }
 
     @UseGuards(JwtAuthGuard)
     @Get(':id')
-    async findOne(@Req() req, @Param('id') queryId: string) {
-        return this.notificationsService.findOne(req.user.type, +req.user.id, +queryId);
+    async findOne(  @Req() req,
+                    @Param('id', ParseIntPipe) queryId: number) {
+        return await this.notificationsService.findOne(req.user.type, +req.user.id, queryId);
     }
 
     @UseGuards(JwtAuthGuard)
     @Patch(':id')
-    async update(@Req() req, @Param('id') id: string, @Body() updateNotificationDto: UpdateNotificationDto) {
-        return await this.notificationsService.update(req.user.type, +req.user.id, +id, updateNotificationDto);
+    async update(   @Req() req,
+                    @Param('id', ParseIntPipe) queryId: number,
+                    @Body() updateNotificationDto: UpdateNotificationDto) {
+        return await this.notificationsService.update(req.user.type, +req.user.id, queryId, updateNotificationDto);
     }
 
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
-    remove(@Req() req, @Param('id') id: string) {
-        return this.notificationsService.remove(req.user.type, +req.user.id, +id);
+    remove( @Req() req,
+            @Param('id', ParseIntPipe) queryId: number) {
+        return this.notificationsService.remove(req.user.type, +req.user.id, queryId);
     }
 
 }
