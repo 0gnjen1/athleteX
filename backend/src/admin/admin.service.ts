@@ -10,18 +10,19 @@ export class AdminService {
 
     async create(createAdminDto: CreateAdminDto) {
         if( createAdminDto.key !== process.env.ADMINKEY ) throw new UnauthorizedException();
-        const pwdhash = bcrypt.hashSync(createAdminDto.password, 10);
+        createAdminDto.password = bcrypt.hashSync(createAdminDto.password, 10);
         const admin = await this.prisma.admin.create({
             data: {
                 email: createAdminDto.email,
                 name: createAdminDto.name,
-                password: pwdhash
+                password: createAdminDto.password
             }
         })
         return admin;
     }
 
-    async findAll(page: number, pgsize: number) {
+    async findAll(userType: string, page: number, pgsize: number) {
+        if(userType !== "admin") throw new UnauthorizedException();
         return await this.prisma.admin.findMany({
             skip: (page-1)*pgsize,
             take: pgsize,
@@ -33,18 +34,20 @@ export class AdminService {
         });
     }
 
-    async findOne(id: number) {
+    async findOne(userType: string, queryId: number) {
+        if(userType !== "admin") throw new UnauthorizedException();
         return await this.prisma.admin.findUnique({
             where:  {
-                id: id
+                id: queryId
             }
         });
     }
 
-    async update(id: number, updateAdminDto: UpdateAdminDto) {
+    async update(userType:string, queryId: number, updateAdminDto: UpdateAdminDto) {
+        if(userType !== "admin") throw new UnauthorizedException();
         return await this.prisma.admin.update({
             where: {
-                id: id
+                id: queryId
             },
             data: {
                 email: updateAdminDto.email,
@@ -54,12 +57,14 @@ export class AdminService {
         });
     }
     
-    remove(id: number) {
-        return this.prisma.admin.delete({
+    async remove(userType: string, queryId: number) {
+        if(userType !== "admin") throw new UnauthorizedException();
+        await this.prisma.admin.delete({
             where: {
-                id: id
+                id: queryId
             }
-        })
+        });
+        return
     }
 
 }

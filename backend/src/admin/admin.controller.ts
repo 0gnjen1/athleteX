@@ -6,39 +6,36 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+    
+    constructor(private readonly adminService: AdminService) {}
 
-  @Post()
-  async create(@Body() createAdminDto: CreateAdminDto) {
-    return await this.adminService.create(createAdminDto);
-  }
+    @Post()
+    async create(@Body() createAdminDto: CreateAdminDto) {
+        return await this.adminService.create(createAdminDto);
+    }
 
-  @UseGuards(JwtAuthGuard)
-  @Get()
-  async findAll(@Request() req, @Query('page') page, @Query('pgsize') pgsize) {
-    if(req.user.type !== "admin") throw new UnauthorizedException();
-    return await this.adminService.findAll(+page, +pgsize);
-  }
+    @UseGuards(JwtAuthGuard)
+    @Get()
+    async findAll(@Request() req, @Query('page') page, @Query('pgsize') pgsize) {
+        return await this.adminService.findAll(req.user.type, +page, +pgsize);
+    }
 
-  @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  async findOne(@Param('id') id: string, @Request() req) {
-    if(req.user.type !== "admin") throw new UnauthorizedException();
-    return await this.adminService.findOne(+id);
-  }
+    @UseGuards(JwtAuthGuard)
+    @Get(':id')
+    async findOne(@Param('id') queryId: string, @Request() req) {
+        return await this.adminService.findOne(req.user.type, +queryId);
+    }
 
-  @UseGuards(JwtAuthGuard)
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateAdminDto: UpdateAdminDto, @Request() req) {
-    if(req.user.type !== "admin") throw new UnauthorizedException();
-    return await this.adminService.update(+id, updateAdminDto);
-  }
+    @UseGuards(JwtAuthGuard)
+    @Patch(':id')
+    async update(@Request() req, @Param('id') queryId: string, @Body() updateAdminDto: UpdateAdminDto) {
+        return await this.adminService.update(req.user.type, +queryId, updateAdminDto);
+    }
 
-  @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  async remove(@Param('id') id: string, @Request() req) {
-    if(req.user.type !== "admin") throw new UnauthorizedException();
-    return await this.adminService.remove(+id);
-  }
+    @UseGuards(JwtAuthGuard)
+    @Delete(':id')
+    async remove(@Request() req, @Param('id') queryId: string) {
+        return await this.adminService.remove(req.user.type, +queryId);
+    }
 
 }
