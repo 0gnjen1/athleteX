@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpCode, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -8,8 +8,8 @@ export class NotificationsService {
 
     constructor(private prisma: PrismaService){}
 
-    async create(createNotificationDto: CreateNotificationDto, userType: string, userId: number) {
-        if(userType !== "coach") return new UnauthorizedException();
+    async create(userType: string, userId: number, createNotificationDto: CreateNotificationDto) {
+        if(userType !== "coach") throw new UnauthorizedException();
         return await this.prisma.notifications.create({
             data: {
                 title: createNotificationDto.title,
@@ -53,7 +53,8 @@ export class NotificationsService {
                 where: {
                     id: userId
                 }
-            }); 
+            });
+            if(athlete.coach_id === null) throw new NotFoundException();
             return this.prisma.notifications.findMany({
                 skip: (page-1)*pgsize,
                 take: pgsize,
@@ -85,7 +86,7 @@ export class NotificationsService {
             });
         }
         if(userType === "coach"){
-            return this.prisma.notifications.findUnique({
+            let notification = await this.prisma.notifications.findUnique({
                 select: {
                     id: true,
                     title: true,
@@ -93,9 +94,10 @@ export class NotificationsService {
                     coach_id: true
                 },
                 where: {
-                    id: queryId
+                    id: queryId,
                 }
             });
+            if(userId === notification.coach_id) return notification;
         }
         if(userType === "athlete"){
             let athlete = await this.prisma.athlete.findUnique({
@@ -106,6 +108,7 @@ export class NotificationsService {
                     id: userId
                 }
             });
+            if(athlete.coach_id === null) throw new NotFoundException();
             let notification = await this.prisma.notifications.findUnique({
                 select: {
                     id: true,
@@ -122,12 +125,58 @@ export class NotificationsService {
         throw new UnauthorizedException();
     }
 
-    update(id: number, updateNotificationDto: UpdateNotificationDto) {
-        return `This action updates a #${id} notification`;
+    async update(userType: string, userId: number, queryId: number, updateNotificationDto: UpdateNotificationDto) {
+        if(userType === 'coach'){
+            let notification = await this.prisma.notifications.findUnique({
+                select: {
+                    coach_id: true
+                },
+                where: {
+                    id: queryId
+                }
+            });
+            if(userId !== notification.coach_id) return new UnauthorizedException();
+            return await this.prisma.notifications.update({
+                where: {
+                    id: queryId
+                },
+                data: {
+                    title: updateNotificationDto.title,
+                    content: updateNotificationDto.content,
+                }
+            });
+        }
+        throw new UnauthorizedException();
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} notification`;
+    async remove(userType: string, userId:number, queryId: number) {
+        if(userType === "admin"){
+            await this.prisma.notifications.delete({
+                where: {
+                    id: queryId
+                }
+            });
+            return "sucess"
+        }
+        if(userType === "coach"){
+            let notification = await this.prisma.notifications.findUnique({
+                select: {
+                    coach_id: true
+                },
+                where: {
+                    id: queryId
+                }
+            })
+            if(userId === notification.coach_id){
+                await this.prisma.notifications.delete({
+                    where: {
+                        id: queryId
+                    }
+                })
+                return "sucess"
+            }
+        }
+        throw new UnauthorizedException();
     }
     
 }

@@ -12,31 +12,31 @@ export class NotificationsController {
     @UseGuards(JwtAuthGuard)
     @Post()
     create(@Req() req, @Body() createNotificationDto: CreateNotificationDto) {
-        return this.notificationsService.create(createNotificationDto, req.user.type, req.user.id);
+        return this.notificationsService.create(req.user.type, req.user.id, createNotificationDto);
     }
 
     @UseGuards(JwtAuthGuard)
     @Get()
     async findAll(@Req() req, @Query('page') page, @Query('pgsize') pgsize) {
-        return await this.notificationsService.findAll(req.user.type, req.user.id, +page, +pgsize);
+        return await this.notificationsService.findAll(req.user.type, +req.user.id, +page, +pgsize);
     }
 
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     async findOne(@Req() req, @Param('id') queryId: string) {
-        return this.notificationsService.findOne(req.user.type, req.user.id, +queryId);
+        return this.notificationsService.findOne(req.user.type, +req.user.id, +queryId);
     }
 
     @UseGuards(JwtAuthGuard)
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateNotificationDto: UpdateNotificationDto) {
-        return this.notificationsService.update(+id, updateNotificationDto);
+    async update(@Req() req, @Param('id') id: string, @Body() updateNotificationDto: UpdateNotificationDto) {
+        return await this.notificationsService.update(req.user.type, +req.user.id, +id, updateNotificationDto);
     }
 
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.notificationsService.remove(+id);
+    remove(@Req() req, @Param('id') id: string) {
+        return this.notificationsService.remove(req.user.type, +req.user.id, +id);
     }
 
 }
