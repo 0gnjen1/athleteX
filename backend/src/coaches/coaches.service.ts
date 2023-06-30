@@ -10,18 +10,18 @@ export class CoachesService {
     constructor(private prisma: PrismaService){}
 
     async create(createCoachDto: CreateCoachDto) {
-        const pwdhash = bcrypt.hashSync(createCoachDto.password, 10);
+        createCoachDto.password = bcrypt.hashSync(createCoachDto.password, 10);
         return await this.prisma.coach.create({
             data: {
                 email: createCoachDto.email,
-                password: pwdhash,
+                password: createCoachDto.password,
                 name: createCoachDto.name
             }
         });
     }
 
-    async findAll(usertype: string, page: number, pgsize: number) {
-        if(usertype === 'admin'){
+    async findAll(userType: string, page: number, pgsize: number) {
+        if(userType === 'admin'){
             return await this.prisma.coach.findMany({
                 skip: (page-1)*pgsize,
                 take: pgsize,
@@ -31,7 +31,7 @@ export class CoachesService {
                 }
             });
         }
-        throw new UnauthorizedException()
+        throw new UnauthorizedException();
     }
 
     async findOne(userType: string, userId: number, queryId: number) {
@@ -71,7 +71,7 @@ export class CoachesService {
                         id: true,
                         name: true,
                     }
-                })
+                });
             }
         }
         throw new UnauthorizedException();
@@ -97,7 +97,7 @@ export class CoachesService {
                 where: {
                     id: queryId
                 }
-            })
+            });
         }
         throw new UnauthorizedException();
     }
