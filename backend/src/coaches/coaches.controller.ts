@@ -3,6 +3,9 @@ import { CoachesService } from './coaches.service';
 import { CreateCoachDto } from './dto/create-coach.dto';
 import { UpdateCoachDto } from './dto/update-coach.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { PagePipe } from 'src/pipes/pagination/page.pipe';
+import { PageSizePipe } from 'src/pipes/pagination/page-size.pipe';
+import { User } from 'src/decorators/users/user-from-req.decorator';
 
 @Controller('coaches')
 export class CoachesController {
@@ -15,32 +18,32 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    findAll(    @Request() req,
-                @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-                @Query('pgsize', new DefaultValuePipe(10), ParseIntPipe) pgsize: number) {
-        return this.coachesService.findAll(req.user.type, +req.user.id, page, pgsize);
+    findAll(    @User() user,
+                @Query('page', PagePipe) page: number,
+                @Query('pgsize', PageSizePipe) pgsize: number) {
+        return this.coachesService.findAll(user.type, user.id, page, pgsize);
     }
 
     @UseGuards(JwtAuthGuard)
     @Get(':id')
-    findOne(@Request() req,
+    findOne(@User() user,
             @Param('id', ParseIntPipe) queryId: number) {
-        return this.coachesService.findOne(req.user.type, +req.user.id, queryId);
+        return this.coachesService.findOne(user.type, user.id, queryId);
     }
 
     @UseGuards(JwtAuthGuard)
     @Patch(':id')
-    update( @Request() req,
+    update( @User() user,
             @Param('id', ParseIntPipe) queryId: number,
             @Body() updateCoachDto: UpdateCoachDto) {
-        return this.coachesService.update(req.user.type, +req.user.id, queryId, updateCoachDto);
+        return this.coachesService.update(user.type, user.id, queryId, updateCoachDto);
     }
 
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
-    remove( @Request() req,
+    remove( @User() user,
             @Param('id', ParseIntPipe) queryId: number) {
-        return this.coachesService.remove(req.user.type, +req.user.id, queryId);
+        return this.coachesService.remove(user.type, user.id, queryId);
     }
 
 }
