@@ -3,6 +3,8 @@ import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { PagePipe } from 'src/pipes/pagination/page.pipe';
+import { PageSizePipe } from 'src/pipes/pagination/page-size.pipe';
 
 @Controller('notifications')
 export class NotificationsController {
@@ -19,8 +21,8 @@ export class NotificationsController {
     @UseGuards(JwtAuthGuard)
     @Get()
     async findAll(  @Req() req,
-                    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-                    @Query('pgsize', new DefaultValuePipe(10), ParseIntPipe) pgsize: number) {
+                    @Query('page', PagePipe) page: number,
+                    @Query('pgsize', PageSizePipe) pgsize: number) {
         return await this.notificationsService.findAll(req.user.type, +req.user.id, page, pgsize);
     }
 

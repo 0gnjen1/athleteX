@@ -3,6 +3,8 @@ import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { PagePipe } from 'src/pipes/pagination/page.pipe';
+import { PageSizePipe } from 'src/pipes/pagination/page-size.pipe';
 
 @Controller('admin')
 export class AdminController {
@@ -17,8 +19,8 @@ export class AdminController {
     @UseGuards(JwtAuthGuard)
     @Get()
     async findAll(  @Request() req,
-                    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-                    @Query('pgsize', new DefaultValuePipe(10), ParseIntPipe) pgsize: number) {
+                    @Query('page', PagePipe) page: number,
+                    @Query('pgsize', PageSizePipe) pgsize: number) {
         return await this.adminService.findAll(req.user.type, +page, +pgsize);
     }
 

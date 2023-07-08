@@ -3,6 +3,8 @@ import { AthletesService } from './athletes.service';
 import { CreateAthleteDto } from './dto/create-athlete.dto';
 import { UpdateAthleteDto } from './dto/update-athlete.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { PagePipe } from 'src/pipes/pagination/page.pipe';
+import { PageSizePipe } from 'src/pipes/pagination/page-size.pipe';
 
 @Controller('athletes')
 export class AthletesController {
@@ -17,8 +19,8 @@ export class AthletesController {
     @UseGuards(JwtAuthGuard)
     @Get()
     async findAll(  @Request() req,
-                    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-                    @Query('pgsize', new DefaultValuePipe(10), ParseIntPipe) pgsize: number) {
+                    @Query('page', PagePipe) page: number,
+                    @Query('pgsize', PageSizePipe) pgsize: number) {
         return await this.athletesService.findAll(req.user.type, +req.user.id, page, pgsize);
     }
 
@@ -31,7 +33,7 @@ export class AthletesController {
   
     @UseGuards(JwtAuthGuard)
     @Patch(':id')
-    async update(@Request() req,
+    async update(   @Request() req,
                     @Param('id', ParseIntPipe) queryId: number,
                     @Body() updateAthleteDto: UpdateAthleteDto) {
         return await this.athletesService.update(req.user.type, +req.user.id, queryId, updateAthleteDto);
@@ -39,14 +41,14 @@ export class AthletesController {
   
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
-    async remove(@Request() req,
+    async remove(   @Request() req,
                     @Param('id', ParseIntPipe) queryId: number) {
         return await this.athletesService.remove(req.user.type, +req.user.id, queryId);
     }
   
     @UseGuards(JwtAuthGuard)
     @Post(':athleteid/setcoach/:coachid')
-    async setCoach(@Request() req,
+    async setCoach( @Request() req,
                     @Param('athleteid', ParseIntPipe) athleteId: number,
                     @Param('coachid', ParseIntPipe) coachId: number){
         return await this.athletesService.setCoach(req.user.type, athleteId, coachId);
@@ -54,7 +56,7 @@ export class AthletesController {
 
     @UseGuards(JwtAuthGuard)
     @Post(':id/removecoach')
-    async removeCoach(@Request() req,
+    async removeCoach(  @Request() req,
                         @Param('id', ParseIntPipe) queryId: number){
         return await this.athletesService.removeCoach(req.user.type, queryId);
     }
