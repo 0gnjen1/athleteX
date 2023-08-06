@@ -3,6 +3,7 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { PrismaService } from 'src/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { STATUS_CODES } from 'http';
 
 @Injectable()
 export class AdminService {
@@ -70,12 +71,21 @@ export class AdminService {
     
     async remove(userType: string, queryId: number) {
         if(userType !== "admin") throw new UnauthorizedException();
-        await this.prisma.admin.delete({
+        const admin = await this.prisma.admin.findUnique({
+            where: {
+                id: queryId
+            },
+            select: {
+                id: true
+            }
+        });
+        if(admin === null) throw new NotFoundException();
+        const value = await this.prisma.admin.delete({
             where: {
                 id: queryId
             }
         });
-        return
+        return;
     }
 
 }
