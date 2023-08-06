@@ -40,6 +40,11 @@ export class AdminService {
         const admin = await this.prisma.admin.findUnique({
             where:  {
                 id: queryId
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
             }
         });
         if(admin === null) throw new NotFoundException();
