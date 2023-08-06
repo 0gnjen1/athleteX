@@ -44,7 +44,7 @@ export class AdminController {
     @Delete(':id')
     async remove(   @User() user,
                     @Param('id', ParseIntPipe) queryId: number) {
-        return await this.adminService.remove(user.type, queryId);
+        return await this.adminService.remove(user.type, user.id, queryId);
     }
 
 }

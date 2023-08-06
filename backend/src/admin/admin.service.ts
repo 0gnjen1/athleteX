@@ -69,8 +69,8 @@ export class AdminService {
         });
     }
     
-    async remove(userType: string, queryId: number) {
-        if(userType !== "admin") throw new UnauthorizedException();
+    async remove(userType: string, userId: number, queryId: number) {
+        if(userType !== "admin" || userId !== queryId) throw new UnauthorizedException();
         const admin = await this.prisma.admin.findUnique({
             where: {
                 id: queryId
