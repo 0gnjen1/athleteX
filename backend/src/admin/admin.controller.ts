@@ -37,7 +37,7 @@ export class AdminController {
     async update(   @User() user,
                     @Param('id', ParseIntPipe) queryId: number,
                     @Body() updateAdminDto: UpdateAdminDto) {
-        return await this.adminService.update(user.type, queryId, updateAdminDto);
+        return await this.adminService.update(user.type, user.id, queryId, updateAdminDto);
     }
 
     @UseGuards(JwtAuthGuard)

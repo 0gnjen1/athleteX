@@ -51,14 +51,19 @@ export class AdminService {
         return admin;
     }
 
-    async update(userType:string, queryId: number, updateAdminDto: UpdateAdminDto) {
-        if(userType !== "admin") throw new UnauthorizedException();
+    async update(userType: string, userId: number, queryId: number, updateAdminDto: UpdateAdminDto) {
+        if(userType !== "admin" || userId !== queryId) throw new UnauthorizedException();
         return await this.prisma.admin.update({
             where: {
                 id: queryId
             },
             data: {
                 name: updateAdminDto.name
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true
             }
         });
     }
