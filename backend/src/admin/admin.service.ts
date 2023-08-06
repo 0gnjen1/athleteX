@@ -54,6 +54,15 @@ export class AdminService {
 
     async update(userType: string, userId: number, queryId: number, updateAdminDto: UpdateAdminDto) {
         if(userType !== "admin" || userId !== queryId) throw new UnauthorizedException();
+        const admin = await this.prisma.admin.findUnique({
+            where: {
+                id: queryId
+            },
+            select: {
+                id: true
+            }
+        });
+        if(admin === null) throw new NotFoundException();
         return await this.prisma.admin.update({
             where: {
                 id: queryId
