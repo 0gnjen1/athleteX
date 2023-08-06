@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -37,11 +37,13 @@ export class AdminService {
 
     async findOne(userType: string, queryId: number) {
         if(userType !== "admin") throw new UnauthorizedException();
-        return await this.prisma.admin.findUnique({
+        const admin = await this.prisma.admin.findUnique({
             where:  {
                 id: queryId
             }
         });
+        if(admin === null) throw new NotFoundException();
+        return admin;
     }
 
     async update(userType:string, queryId: number, updateAdminDto: UpdateAdminDto) {
