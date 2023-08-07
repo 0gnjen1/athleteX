@@ -9,14 +9,14 @@ import { User } from 'src/decorators/users/user-from-req.decorator';
 @Controller('admins')
 export class AdminsController {
     
-    constructor(private readonly adminService: AdminsService) {}
+    constructor(private readonly adminsService: AdminsService) {}
 
     @UseGuards(JwtAuthGuard)
     @Get()
     async findAll(  @User() user,
                     @Query('page', PagePipe) page: number,
                     @Query('pgsize', PageSizePipe) pgsize: number) {
-        return await this.adminService.findAll(
+        return await this.adminsService.findAll(
             user.type,
             page,
             pgsize
@@ -27,7 +27,7 @@ export class AdminsController {
     @Get(':id')
     async findOne(  @User() user,
                     @Param('id', ParseIntPipe) queryId: number) {
-        return await this.adminService.findOne(
+        return await this.adminsService.findOne(
             user.type,
             queryId
         );
@@ -38,7 +38,7 @@ export class AdminsController {
     async update(   @User() user,
                     @Param('id', ParseIntPipe) queryId: number,
                     @Body() updateAdminDto: UpdateAdminDto) {
-        return await this.adminService.update(
+        return await this.adminsService.update(
             user.type,
             user.id,
             queryId,
@@ -50,7 +50,7 @@ export class AdminsController {
     @Delete(':id')
     async remove(   @User() user,
                     @Param('id', ParseIntPipe) queryId: number) {
-        return await this.adminService.remove(
+        return await this.adminsService.remove(
             user.type,
             user.id,
             queryId
