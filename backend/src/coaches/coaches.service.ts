@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UpdateCoachDto } from '../dtos/coaches/update-coach.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -54,7 +54,7 @@ export class CoachesService {
 
     async findOne(userType: string, userId: number, queryId: number) {
         if(userType === 'admin' || (userType === 'coach' && userId === queryId)){
-            return await this.prisma.coach.findUnique({
+            const coach = await this.prisma.coach.findUnique({
                 where:{
                     id: queryId
                 },
@@ -70,6 +70,8 @@ export class CoachesService {
                     }
                 }
             });
+            if(coach === null) throw new NotFoundException();
+            return coach;
         }
         if(userType === 'athlete'){
             const athlete = await this.prisma.athlete.findUnique({
@@ -80,44 +82,61 @@ export class CoachesService {
                     coach_id: true
                 }
             });
-            if(athlete.coach_id === queryId){
-                return await this.prisma.coach.findUnique({
-                    where: {
-                        id: queryId
-                    },
-                    select: {
-                        id: true,
-                        name: true,
-                    }
-                });
-            }
-        }
-        throw new UnauthorizedException();
-    }
-
-    async update(userType: string, userId: number, queryId: number, updateCoachDto: UpdateCoachDto) {
-        if(userType === 'admin' || (userType === 'coach' && userId === queryId)){
-            return await this.prisma.coach.update({
+            if(athlete === null) throw new UnauthorizedException();
+            if(athlete.coach_id !== queryId) throw new UnauthorizedException();
+            const coach = await this.prisma.coach.findUnique({
                 where: {
                     id: queryId
                 },
-                data: {
-                    name: updateCoachDto.name
+                select: {
+                    id: true,
+                    name: true,
                 }
             });
+            if(coach === null) throw new NotFoundException();
+            return coach;
         }
-        throw new UnauthorizedException();
+        throw new BadRequestException();
+    }
+
+    async update(userType: string, userId: number, queryId: number, updateCoachDto: UpdateCoachDto) {
+        if(userType === 'athlete' || (userType === 'coach' && userId !== queryId)) throw new UnauthorizedException();
+        const coach = await this.prisma.coach.findUnique({
+            where: {
+                id: queryId
+            },
+            select: {
+                id:true
+            }
+        });
+        if(coach === null) throw new NotFoundException();
+        return await this.prisma.coach.update({
+            where: {
+                id: queryId
+            },
+            data: {
+                name: updateCoachDto.name
+            }
+        });
     }
 
     async remove(userType: string, userId: number, queryId: number) {
-        if(userType === 'admin' || (userType === 'coach' && userId === queryId)){
-            return await this.prisma.coach.delete({
-                where: {
-                    id: queryId
-                }
-            });
-        }
-        throw new UnauthorizedException();
+        if(userType === 'athlete' || (userType === 'coach' && userId !== queryId)) throw new UnauthorizedException();
+        const coach = await this.prisma.coach.findUnique({
+            where: {
+                id: queryId
+            },
+            select: {
+                id:true
+            }
+        });
+        if(coach === null) throw new NotFoundException();
+        await this.prisma.coach.delete({
+            where: {
+                id: queryId
+            }
+        });
+        return;
     }
 
 }
