@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -7,16 +7,85 @@ import * as bcrypt from 'bcrypt';
 export class AuthService {
     constructor(private prisma: PrismaService, private jwtService: JwtService){}
 
-    async registerAthlete(name: string, email: string, password: string) {
+    async registerAdmin(name: string, email: string, password: string, key: string) {
+        if( key !== process.env.ADMINKEY ) throw new UnauthorizedException();
+        const emailAlreadyInDatabase = await this.prisma.admin.findUnique({
+            where: {
+                email: email
+            },
+            select: {
+                id: true
+            }
+        });
+        if(emailAlreadyInDatabase !== null) throw new BadRequestException('The email is already associated with an account');
         password = bcrypt.hashSync(password, 10);
-        return await this.prisma.athlete.create({
+        const admin = await this.prisma.admin.create({
             data: {
+                name: name,
+                email: email,
+                password: password
+            }
+        })
+        return admin;
+    }
+
+    async registerAthlete(name: string, email: string, password: string) {
+        const emailAlreadyInDatabase = await this.prisma.athlete.findUnique({
+            where: {
+                email: email
+            },
+            select: {
+                id: true
+            }
+        });
+        if(emailAlreadyInDatabase !== null) throw new BadRequestException('The email is already associated with an account');
+        password = bcrypt.hashSync(password, 10);
+        const athlete = await this.prisma.athlete.create({
+            data: {
+                name: name,
                 email: email,
                 password: password,
-                name: name,
                 coach_id: null
             }
         });
+        return athlete;
+    }
+
+    async registerCoach(name: string, email: string, password: string) {
+        const emailAlreadyInDatabase = await this.prisma.coach.findUnique({
+            where: {
+                email: email
+            },
+            select: {
+                id: true
+            }
+        });
+        if(emailAlreadyInDatabase !== null) throw new BadRequestException('The email is already associated with an account');
+        password = bcrypt.hashSync(password, 10);
+        const coach = await this.prisma.coach.create({
+            data: {
+                email: email,
+                password: password,
+                name: name
+            }
+        });
+        return coach;
+    }
+
+    async validateAdmin(email: string, password: string){
+        const admin = await this.prisma.admin.findUnique({
+            where: {
+                email: email
+            }
+        })
+        if(bcrypt.compareSync(password, admin.password)){
+            const result = {
+                id: admin.id,
+                type: "admin"
+            }
+            return result;
+        }
+        return null;
     }
 
     async validateAthlete(email: string, password: string){
@@ -35,17 +104,6 @@ export class AuthService {
         return null;
     }
 
-    async registerCoach(name: string, email: string, password: string) {
-        password = bcrypt.hashSync(password, 10);
-        return await this.prisma.coach.create({
-            data: {
-                email: email,
-                password: password,
-                name: name
-            }
-        });
-    }
-
     async validateCoach(email: string, password: string){
         const coach = await this.prisma.coach.findUnique({
             where: {
@@ -56,35 +114,6 @@ export class AuthService {
             const result = {
                 id: coach.id,
                 type: "coach"
-            }
-            return result;
-        }
-        return null;
-    }
-
-    async registerAdmin(name: string, email: string, password: string, key: string) {
-        if( key !== process.env.ADMINKEY ) throw new UnauthorizedException();
-        password = bcrypt.hashSync(password, 10);
-        const admin = await this.prisma.admin.create({
-            data: {
-                email: email,
-                name: name,
-                password: password
-            }
-        })
-        return admin;
-    }
-
-    async validateAdmin(email: string, password: string){
-        const admin = await this.prisma.admin.findUnique({
-            where: {
-                email: email
-            }
-        })
-        if(bcrypt.compareSync(password, admin.password)){
-            const result = {
-                id: admin.id,
-                type: "admin"
             }
             return result;
         }
