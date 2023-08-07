@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { CoachesModule } from './coaches/coaches.module';
-import { AthletesModule } from './athletes/athletes.module';
-import { AuthModule } from './auth/auth.module';
-import { AdminModule } from './admin/admin.module';
-import { NotificationsModule } from './notifications/notifications.module';
+import { CoachesModule } from '../coaches/coaches.module';
+import { AthletesModule } from '../athletes/athletes.module';
+import { AuthModule } from '../auth/auth.module';
+import { AdminModule } from '../admin/admin.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports:      [ConfigModule.forRoot({
@@ -17,7 +17,8 @@ import { NotificationsModule } from './notifications/notifications.module';
                     AthletesModule,
                     AuthModule,
                     AdminModule,
-                    NotificationsModule],
+                    NotificationsModule
+                ],
   controllers:  [AppController],
   providers:    [AppService],
 })

@@ -1,7 +1,7 @@
 import { HttpCode, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateNotificationDto } from '../dtos/notifications/create-notification.dto';
 import { UpdateNotificationDto } from '../dtos/notifications/update-notification.dto';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class NotificationsService {
