@@ -1,25 +1,11 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateAthleteDto } from './dto/create-athlete.dto';
-import { UpdateAthleteDto } from './dto/update-athlete.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UpdateAthleteDto } from '../dtos/athletes/update-athlete.dto';
 import { PrismaService } from '../prisma.service';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AthletesService {
 
     constructor(private prisma: PrismaService){}
-
-    async create(createAthleteDto: CreateAthleteDto) {
-        createAthleteDto.password = bcrypt.hashSync(createAthleteDto.password, 10);
-        return await this.prisma.athlete.create({
-            data: {
-                email: createAthleteDto.email,
-                password: createAthleteDto.password,
-                name: createAthleteDto.name,
-                coach_id: null
-            }
-        });
-    }
   
     async findAll(userType: string, userId: number, page: number, pgsize: number) {
         if(userType === "admin"){

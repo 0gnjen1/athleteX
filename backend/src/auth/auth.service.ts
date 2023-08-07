@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -6,6 +6,18 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
     constructor(private prisma: PrismaService, private jwtService: JwtService){}
+
+    async registerAthlete(name: string, email: string, password: string) {
+        password = bcrypt.hashSync(password, 10);
+        return await this.prisma.athlete.create({
+            data: {
+                email: email,
+                password: password,
+                name: name,
+                coach_id: null
+            }
+        });
+    }
 
     async validateAthlete(email: string, password: string){
         const athlete = await this.prisma.athlete.findUnique({
@@ -23,6 +35,17 @@ export class AuthService {
         return null;
     }
 
+    async registerCoach(name: string, email: string, password: string) {
+        password = bcrypt.hashSync(password, 10);
+        return await this.prisma.coach.create({
+            data: {
+                email: email,
+                password: password,
+                name: name
+            }
+        });
+    }
+
     async validateCoach(email: string, password: string){
         const coach = await this.prisma.coach.findUnique({
             where: {
@@ -37,6 +60,19 @@ export class AuthService {
             return result;
         }
         return null;
+    }
+
+    async registerAdmin(name: string, email: string, password: string, key: string) {
+        if( key !== process.env.ADMINKEY ) throw new UnauthorizedException();
+        password = bcrypt.hashSync(password, 10);
+        const admin = await this.prisma.admin.create({
+            data: {
+                email: email,
+                name: name,
+                password: password
+            }
+        })
+        return admin;
     }
 
     async validateAdmin(email: string, password: string){

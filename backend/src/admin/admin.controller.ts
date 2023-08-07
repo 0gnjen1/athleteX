@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, ParseIntPipe } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
+import { CreateAdminDto } from '../dtos/admins/create-admin.dto';
+import { UpdateAdminDto } from '../dtos/admins/update-admin.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { PagePipe } from 'src/pipes/pagination/page.pipe';
 import { PageSizePipe } from 'src/pipes/pagination/page-size.pipe';
@@ -11,11 +11,6 @@ import { User } from 'src/decorators/users/user-from-req.decorator';
 export class AdminController {
     
     constructor(private readonly adminService: AdminService) {}
-
-    @Post()
-    async create(@Body() createAdminDto: CreateAdminDto) {
-        return await this.adminService.create(createAdminDto);
-    }
 
     @UseGuards(JwtAuthGuard)
     @Get()

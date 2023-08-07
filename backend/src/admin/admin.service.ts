@@ -1,27 +1,11 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { UpdateAdminDto } from '../dtos/admins/update-admin.dto';
 import { PrismaService } from 'src/prisma.service';
-import * as bcrypt from 'bcrypt';
-import { STATUS_CODES } from 'http';
 
 @Injectable()
 export class AdminService {
 
     constructor(private prisma: PrismaService){}
-
-    async create(createAdminDto: CreateAdminDto) {
-        if( createAdminDto.key !== process.env.ADMINKEY ) throw new UnauthorizedException();
-        createAdminDto.password = bcrypt.hashSync(createAdminDto.password, 10);
-        const admin = await this.prisma.admin.create({
-            data: {
-                email: createAdminDto.email,
-                name: createAdminDto.name,
-                password: createAdminDto.password
-            }
-        })
-        return admin;
-    }
 
     async findAll(userType: string, page: number, pgsize: number) {
         if(userType !== "admin") throw new UnauthorizedException();

@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, UnauthorizedException, Query, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, ParseIntPipe } from '@nestjs/common';
 import { CoachesService } from './coaches.service';
-import { CreateCoachDto } from './dto/create-coach.dto';
-import { UpdateCoachDto } from './dto/update-coach.dto';
+import { UpdateCoachDto } from '../dtos/coaches/update-coach.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { PagePipe } from 'src/pipes/pagination/page.pipe';
 import { PageSizePipe } from 'src/pipes/pagination/page-size.pipe';
@@ -10,11 +9,6 @@ import { User } from 'src/decorators/users/user-from-req.decorator';
 @Controller('coaches')
 export class CoachesController {
     constructor(private readonly coachesService: CoachesService) {}
-
-    @Post()
-    create(@Body() createCoachDto: CreateCoachDto) {
-        return this.coachesService.create(createCoachDto);
-    }
 
     @UseGuards(JwtAuthGuard)
     @Get()
