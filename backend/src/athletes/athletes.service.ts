@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UpdateAthleteDto } from '../dtos/athletes/update-athlete.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -47,7 +47,7 @@ export class AthletesService {
   
     async findOne(userType: string, userId: number, queryId: number) {
         if(userType === "admin" || (userType === "athlete" && userId === queryId)){
-            return await this.prisma.athlete.findUnique({
+            const athlete = await this.prisma.athlete.findUnique({
                 where:{
                     id: queryId
                 },
@@ -61,7 +61,9 @@ export class AthletesService {
                         }
                     }
                 }
-            }); 
+            });
+            if(athlete === null) throw new NotFoundException();
+            return athlete;
         }
         if(userType === "coach"){
             const athlete = await this.prisma.athlete.findUnique({
@@ -79,40 +81,50 @@ export class AthletesService {
                     }
                 }
             });
+            if(athlete === null) throw new NotFoundException();
             if(userId === athlete.coach.id) return athlete;
         }
-        throw new UnauthorizedException();
+        throw new BadRequestException();
     }
   
     async update(userType: string, userId: number, queryId: number, updateAthleteDto: UpdateAthleteDto) {
-        if(userType === "admin" || (userType === "athlete" && userId === queryId)){
-            return await this.prisma.athlete.update({
-                where: {
-                    id: queryId
-                },
-                data: {
-                    name: updateAthleteDto.name
-                },
-                select: {
-                    id: true,
-                    email: true,
-                    name: true
-                }
-            }); 
-        }
-        throw new UnauthorizedException();
+        if(userType === 'coach' || (userType === 'athlete' && userId !== queryId)) throw new UnauthorizedException();
+        const athlete = await this.prisma.athlete.findUnique({
+            where: {
+                id: queryId
+            },
+            select: {
+                id:true
+            }
+        });
+        if(athlete === null) throw new NotFoundException();
+        return await this.prisma.coach.update({
+            where: {
+                id: queryId
+            },
+            data: {
+                name: updateAthleteDto.name
+            }
+        });
     }
   
     async remove(userType: string, userId: number, queryId: number) {
-        if(userType === "admin" || (userType === "athlete" && userId === queryId)){
-            await this.prisma.athlete.delete({
-                where: {
-                    id: queryId
-                }
-            })
-            return 'removed athlete';
-        }
-        throw new UnauthorizedException();
+        if(userType === "coach" || (userType === "athlete" && userId !== queryId)) throw new UnauthorizedException();
+        const athlete = await this.prisma.athlete.findUnique({
+            where: {
+                id: queryId
+            },
+            select: {
+                id: true
+            }
+        });
+        if(athlete === null) throw new NotFoundException();
+        await this.prisma.athlete.delete({
+            where: {
+                id: queryId
+            }
+        });
+        return;
     }
 
     async setCoach(userType:string, athleteId: number, coachId: number){
@@ -129,7 +141,7 @@ export class AthletesService {
                 },
             },
         })
-        return 'updated coach';
+        return;
     }
 
     async removeCoach(userType: string, queryId: number){
@@ -142,7 +154,7 @@ export class AthletesService {
                 coach_id: null
             }
         })
-        return 'removed coach';
+        return;
     }
   
 }
