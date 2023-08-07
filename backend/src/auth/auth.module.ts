@@ -15,7 +15,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
                     LocalCoachStrategy,
                     LocalAdminStrategy,
                     JwtStrategy
-				],
+                ],
   imports:      [PassportModule,
                     PrismaModule,
                     JwtModule.register({

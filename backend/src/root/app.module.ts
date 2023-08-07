@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CoachesModule } from '../coaches/coaches.module';
 import { AthletesModule } from '../athletes/athletes.module';
 import { AuthModule } from '../auth/auth.module';
-import { AdminModule } from '../admin/admin.module';
+import { AdminsModule } from '../admins/admins.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
@@ -16,7 +16,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
                     CoachesModule,
                     AthletesModule,
                     AuthModule,
-                    AdminModule,
+                    AdminsModule,
                     NotificationsModule
                 ],
   controllers:  [AppController],

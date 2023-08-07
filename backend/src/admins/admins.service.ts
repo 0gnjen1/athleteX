@@ -3,7 +3,7 @@ import { UpdateAdminDto } from '../dtos/admins/update-admin.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class AdminService {
+export class AdminsService {
 
     constructor(private prisma: PrismaService){}
 
