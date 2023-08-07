@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { CreateNotificationDto } from '../dtos/notifications/create-notification.dto';
+import { UpdateNotificationDto } from '../dtos/notifications/update-notification.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { PagePipe } from 'src/pipes/pagination/page.pipe';
 import { PageSizePipe } from 'src/pipes/pagination/page-size.pipe';
