@@ -24,6 +24,11 @@ export class AuthService {
                 name: name,
                 email: email,
                 password: password
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true
             }
         })
         return admin;
@@ -46,6 +51,12 @@ export class AuthService {
                 email: email,
                 password: password,
                 coach_id: null
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                coach_id: true
             }
         });
         return athlete;
@@ -67,6 +78,11 @@ export class AuthService {
                 email: email,
                 password: password,
                 name: name
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true
             }
         });
         return coach;
