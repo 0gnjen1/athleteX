@@ -105,7 +105,40 @@ export class NotificationsService {
     }
 
     async remove(coachId: number, notificationId: number) {
-        
+        const coach = await this.prisma.coach.findUnique({
+            where: {
+                id: coachId
+            },
+            select: {
+                id: true
+            }
+        });
+        if(coach === null) throw new BadRequestException();
+        const notification  = await this.prisma.notifications.findUnique({
+            select: {
+                coach_id: true
+            },
+            where: {
+                id: notificationId
+            }
+        });
+        if(notification === null) throw new BadRequestException();
+        if(coachId !== notification.coach_id) throw new UnauthorizedException();
+        await this.prisma.notifications.delete({
+            where: {
+                id: notificationId
+            }
+        });
+        return;
     }
     
+    async removeAll(coachId: number) {
+        await this.prisma.notifications.deleteMany({
+            where: {
+              coach_id: coachId
+            },
+        });
+        return;
+    }
+
 }
