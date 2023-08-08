@@ -6,7 +6,6 @@ import { CoachesModule } from '../coaches/coaches.module';
 import { AthletesModule } from '../athletes/athletes.module';
 import { AuthModule } from '../auth/auth.module';
 import { AdminsModule } from '../admins/admins.module';
-import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports:      [ConfigModule.forRoot({
@@ -16,8 +15,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
                     CoachesModule,
                     AthletesModule,
                     AuthModule,
-                    AdminsModule,
-                    NotificationsModule
+                    AdminsModule
                 ],
   controllers:  [AppController],
   providers:    [AppService],
