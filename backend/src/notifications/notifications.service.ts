@@ -7,7 +7,51 @@ export class NotificationsService {
 
     constructor(private prisma: PrismaService){}
 
-    async create(coachId: number, title: string, content: string) {
+    async findAllNotifications(
+        coachId: number,
+        page: number,
+        pgsize: number
+    ) {
+        return await this.prisma.notifications.findMany({
+            skip: (page-1)*pgsize,
+            take: pgsize,
+            select: {
+                id: true,
+                title: true,
+                content: true,
+                coach_id: true
+            },
+            where: {
+                coach_id: coachId
+            }
+        });
+    }
+
+    async findOneNotification(
+        coachId: number,
+        notificationId: number
+    ) {
+        const notification = await this.prisma.notifications.findUnique({
+            select: {
+                id: true,
+                title: true,
+                content: true,
+                coach_id: true
+            },
+            where: {
+                id: notificationId,
+                coach_id: coachId
+            }
+        });
+        if(notification === null) throw new NotFoundException();
+        return notification;
+    }
+
+    async createNotification(
+        coachId: number,
+        title: string,
+        content: string
+    ) {
         const coach = await this.prisma.coach.findUnique({
             where: {
                 id: coachId
@@ -26,76 +70,21 @@ export class NotificationsService {
         });
     }
 
-    async findAll(coachId: number, page: number, pgsize: number) {
-        const coach = await this.prisma.coach.findUnique({
-            where: {
-                id: coachId
-            },
-            select: {
-                id: true
-            }
-        });
-        if(coach === null) throw new NotFoundException();
-        return await this.prisma.notifications.findMany({
-            skip: (page-1)*pgsize,
-            take: pgsize,
-            select: {
-                id: true,
-                title: true,
-                content: true,
-                coach_id: true
-            },
-            where: {
-                coach_id: coachId
-            }
-        });
-    }
-
-    async findOne(coachId: number, notificationId: number) {
-        const coach = await this.prisma.coach.findUnique({
-            where: {
-                id: coachId
-            },
-            select: {
-                id: true
-            }
-        });
-        if(coach === null) throw new NotFoundException();
-        const notification = await this.prisma.notifications.findUnique({
-            select: {
-                id: true,
-                title: true,
-                content: true,
-                coach_id: true
-            },
-            where: {
-                id: notificationId
-            }
-        });
-        if(notification === null) throw new NotFoundException();
-        return notification;
-    }
-
-    async update(coachId: number, notificationId: number, updateNotificationDto: UpdateNotificationDto) {
-        const coach = await this.prisma.coach.findUnique({
-            where: {
-                id: coachId
-            },
-            select: {
-                id: true
-            }
-        });
-        if(coach === null) throw new BadRequestException();
+    async updateNotification(
+        coachId: number,
+        notificationId: number,
+        updateNotificationDto: UpdateNotificationDto
+    ) {
         const notification  = await this.prisma.notifications.findUnique({
             select: {
                 coach_id: true
             },
             where: {
-                id: notificationId
+                id: notificationId,
+                coach_id: coachId
             }
         });
         if(notification === null) throw new BadRequestException();
-        if(coachId !== notification.coach_id) throw new UnauthorizedException();
         return await this.prisma.notifications.update({
             data: updateNotificationDto,
             where: {
@@ -104,26 +93,20 @@ export class NotificationsService {
         });
     }
 
-    async remove(coachId: number, notificationId: number) {
-        const coach = await this.prisma.coach.findUnique({
-            where: {
-                id: coachId
-            },
-            select: {
-                id: true
-            }
-        });
-        if(coach === null) throw new BadRequestException();
+    async removeNotification(
+        coachId: number,
+        notificationId: number
+    ) {
         const notification  = await this.prisma.notifications.findUnique({
             select: {
                 coach_id: true
             },
             where: {
-                id: notificationId
+                id: notificationId,
+                coach_id: coachId
             }
         });
         if(notification === null) throw new BadRequestException();
-        if(coachId !== notification.coach_id) throw new UnauthorizedException();
         await this.prisma.notifications.delete({
             where: {
                 id: notificationId
@@ -132,7 +115,9 @@ export class NotificationsService {
         return;
     }
     
-    async removeAll(coachId: number) {
+    async removeAllNotification(
+        coachId: number
+    ) {
         await this.prisma.notifications.deleteMany({
             where: {
               coach_id: coachId

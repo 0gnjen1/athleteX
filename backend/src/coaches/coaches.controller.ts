@@ -14,12 +14,12 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    findAllCoaches(
+    async findAllCoaches(
         @User() user,
         @Query('page', PagePipe) page: number,
         @Query('pgsize', PageSizePipe) pgsize: number
     ){
-        return this.coachesService.findAll(
+        return await this.coachesService.findAllCoaches(
             user.type,
             user.id,
             page,
@@ -29,11 +29,11 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Get(':coachid')
-    findOneCoach(
+    async findOneCoach(
         @User() user,
         @Param('coachid', ParseIntPipe) coachQueryId: number
     ){
-        return this.coachesService.findOne(
+        return await this.coachesService.findOneCoach(
             user.type,
             user.id,
             coachQueryId
@@ -42,12 +42,12 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Patch(':coachid')
-    updateCoach(
+    async updateCoach(
         @User() user,
         @Param('coachid', ParseIntPipe) coachQueryId: number,
         @Body() updateCoachDto: UpdateCoachDto
     ){
-        return this.coachesService.update(
+        return await this.coachesService.updateCoach(
             user.type,
             user.id,
             coachQueryId,
@@ -57,11 +57,11 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Delete(':coachid')
-    removeCoach(
+    async removeCoach(
         @User() user,
         @Param('coachid', ParseIntPipe) coachQueryId: number
     ){
-        return this.coachesService.remove(
+        return await this.coachesService.removeCoach(
             user.type,
             user.id,
             coachQueryId
@@ -70,13 +70,13 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Get(':coachid/notifications')
-    findAllNotifications(
+    async findAllNotifications(
         @User() user,
         @Param('coachid', ParseIntPipe) coachQueryId: number,
         @Query('page', PagePipe) page: number,
         @Query('pgsize', PageSizePipe) pgsize: number
     ){
-        return this.coachesService.findAllNotifications(
+        return await this.coachesService.findAllNotifications(
             user.type,
             user.id,
             coachQueryId,
@@ -87,12 +87,12 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Get(':coachid/notifications/:notificationid')
-    findOneNotification(
+    async findOneNotification(
         @User() user,
         @Param('coachid', ParseIntPipe) coachQueryId: number,
         @Param('notificationid', ParseIntPipe) notificationQueryId: number
     ){
-        return this.coachesService.findOneNotification(
+        return await this.coachesService.findOneNotification(
             user.type,
             user.id,
             coachQueryId,
@@ -102,16 +102,17 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Post(':coachid/notifications')
-    createNotification(
+    async createNotification(
         @User() user,
         @Param('coachid', ParseIntPipe) coachQueryId: number,
         @Body() createNotificationDto: CreateNotificationDto
     ){
-        return this.coachesService.addNotification(
+        return await this.coachesService.addNotification(
             user.type,
             user.id,
             coachQueryId,
-            createNotificationDto
+            createNotificationDto.title,
+            createNotificationDto.content
         );
     }
 

@@ -1,13 +1,24 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UpdateCoachDto } from '../dtos/coaches/update-coach.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { CreateNotificationDto } from 'src/dtos/notifications/create-notification.dto';
+import { UpdateNotificationDto } from 'src/dtos/notifications/update-notification.dto';
 
 @Injectable()
 export class CoachesService {
 
-    constructor(private prisma: PrismaService){}
+    constructor(
+        private prisma: PrismaService,
+        private notificationService: NotificationsService
+    ){}
 
-    async findAll(userType: string, userId: number, page: number, pgsize: number) {
+    async findAllCoaches(
+        userType: string,
+        userId: number,
+        page: number,
+        pgsize: number
+    ) {
         if(userType === 'admin'){
             return await this.prisma.coach.findMany({
                 skip: (page-1)*pgsize,
@@ -52,7 +63,11 @@ export class CoachesService {
         throw new UnauthorizedException();
     }
 
-    async findOne(userType: string, userId: number, queryId: number) {
+    async findOneCoach(
+        userType: string,
+        userId: number,
+        queryId: number
+    ) {
         if(userType === 'admin' || (userType === 'coach' && userId === queryId)){
             const coach = await this.prisma.coach.findUnique({
                 where:{
@@ -99,7 +114,12 @@ export class CoachesService {
         throw new BadRequestException();
     }
 
-    async update(userType: string, userId: number, queryId: number, updateCoachDto: UpdateCoachDto) {
+    async updateCoach(
+        userType: string,
+        userId: number,
+        queryId: number,
+        updateCoachDto: UpdateCoachDto
+    ) {
         if(userType === 'athlete' || (userType === 'coach' && userId !== queryId)) throw new UnauthorizedException();
         const coach = await this.prisma.coach.findUnique({
             where: {
@@ -120,7 +140,11 @@ export class CoachesService {
         });
     }
 
-    async remove(userType: string, userId: number, queryId: number) {
+    async removeCoach(
+        userType: string,
+        userId: number,
+        queryId: number
+    ) {
         if(userType === 'athlete' || (userType === 'coach' && userId !== queryId)) throw new UnauthorizedException();
         const coach = await this.prisma.coach.findUnique({
             where: {
@@ -131,12 +155,93 @@ export class CoachesService {
             }
         });
         if(coach === null) throw new NotFoundException();
+        await this.notificationService.removeAllNotification(queryId);
         await this.prisma.coach.delete({
             where: {
                 id: queryId
             }
         });
         return;
+    }
+
+    async findAllNotifications(
+        userType: string,
+        userId: number,
+        coachQueryId: number,
+        page: number,
+        pgsize: number
+    ){
+        if(userType === "coach" && (userId !== coachQueryId)) throw new UnauthorizedException();
+        if(userType === "athlete"){
+            const athlete = await this.prisma.athlete.findUnique({
+                where: {
+                    id: userId
+                },
+                select: {
+                    coach_id: true
+                }
+            });
+            if(athlete === null) throw new UnauthorizedException();
+            if(athlete.coach_id !== coachQueryId) throw new UnauthorizedException();
+        }
+        return await this.notificationService.findAllNotifications(coachQueryId, page, pgsize)
+    }
+
+    async findOneNotification(
+        userType: string,
+        userId: number,
+        coachQueryId: number,
+        notificationQueryId: number
+    ){
+        if(userType === "coach" && (userId !== coachQueryId)) throw new UnauthorizedException();
+        if(userType === "athlete"){
+            const athlete = await this.prisma.athlete.findUnique({
+                where: {
+                    id: userId
+                },
+                select: {
+                    coach_id: true
+                }
+            });
+            if(athlete === null) throw new UnauthorizedException();
+            if(athlete.coach_id !== coachQueryId) throw new UnauthorizedException();
+        }
+        return await this.notificationService.findOneNotification(coachQueryId, notificationQueryId);
+    }
+
+    async addNotification(
+        userType: string,
+        userId: number,
+        coachQueryId: number,
+        notificationTitle: string,
+        notificationContent: string
+    ){
+        if(userType === "coach" && (userId !== coachQueryId)) throw new UnauthorizedException();
+        if(userType === "athlete") throw new UnauthorizedException();
+        return await this.notificationService.createNotification(coachQueryId, notificationTitle, notificationContent);
+    }
+
+    async updateNotification(
+        userType: string,
+        userId: number,
+        coachQueryId: number,
+        notificationQueryId: number,
+        updateNotificationDto: UpdateNotificationDto
+    ){
+        if(userType === "coach" && (userId !== coachQueryId)) throw new UnauthorizedException();
+        if(userType === "athlete") throw new UnauthorizedException();
+        return await this.notificationService.updateNotification(coachQueryId, notificationQueryId, updateNotificationDto);
+    }
+
+    async removeNotification(
+        userType: string,
+        userId: number,
+        coachQueryId: number,
+        notificationQueryId: number
+    ){
+        if(userType === "coach" && (userId !== coachQueryId)) throw new UnauthorizedException();
+        if(userType === "athlete") throw new UnauthorizedException();
+        return this.notificationService.removeNotification(coachQueryId, notificationQueryId);
     }
 
 }
