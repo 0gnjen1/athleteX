@@ -31,19 +31,14 @@ export class NotificationsService {
         coachId: number,
         notificationId: number
     ) {
-        const notification = await this.prisma.notifications.findUnique({
-            select: {
-                id: true,
-                title: true,
-                content: true,
-                coach_id: true
-            },
-            where: {
-                id: notificationId,
-                coach_id: coachId
-            }
-        });
-        if(notification === null) throw new NotFoundException();
+        const notification = await this.prisma.$queryRaw`
+            SELECT *
+            FROM Notifications
+            WHERE id = ${notificationId}
+            AND coach_id = ${coachId}
+            LIMIT 1
+        `;
+        if(notification[0] === undefined) throw new NotFoundException();
         return notification;
     }
 
@@ -65,7 +60,11 @@ export class NotificationsService {
             data: {
                 title: title,
                 content: content,
-                coach_id: coachId
+                coach: {
+                    connect: {
+                        id: coachId
+                    }
+                }
             }
         });
     }
@@ -75,16 +74,14 @@ export class NotificationsService {
         notificationId: number,
         updateNotificationDto: UpdateNotificationDto
     ) {
-        const notification  = await this.prisma.notifications.findUnique({
-            select: {
-                coach_id: true
-            },
-            where: {
-                id: notificationId,
-                coach_id: coachId
-            }
-        });
-        if(notification === null) throw new BadRequestException();
+        const notification = await this.prisma.$queryRaw`
+            SELECT *
+            FROM Notifications
+            WHERE id = ${notificationId}
+            AND coach_id = ${coachId}
+            LIMIT 1
+        `;
+        if(notification[0] === undefined) throw new BadRequestException();
         return await this.prisma.notifications.update({
             data: updateNotificationDto,
             where: {
@@ -97,16 +94,14 @@ export class NotificationsService {
         coachId: number,
         notificationId: number
     ) {
-        const notification  = await this.prisma.notifications.findUnique({
-            select: {
-                coach_id: true
-            },
-            where: {
-                id: notificationId,
-                coach_id: coachId
-            }
-        });
-        if(notification === null) throw new BadRequestException();
+        const notification = await this.prisma.$queryRaw`
+            SELECT *
+            FROM Notifications
+            WHERE id = ${notificationId}
+            AND coach_id = ${coachId}
+            LIMIT 1
+        `;
+        if(notification[0] === undefined) throw new NotFoundException();
         await this.prisma.notifications.delete({
             where: {
                 id: notificationId

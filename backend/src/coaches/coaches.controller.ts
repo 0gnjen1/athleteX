@@ -134,7 +134,7 @@ export class CoachesController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post(':coachid/notifications/:notificationid')
+    @Delete(':coachid/notifications/:notificationid')
     removeNotification(
         @User() user,
         @Param('coachid', ParseIntPipe) coachQueryId: number,

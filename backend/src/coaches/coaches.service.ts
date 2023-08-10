@@ -120,7 +120,8 @@ export class CoachesService {
         queryId: number,
         updateCoachDto: UpdateCoachDto
     ) {
-        if(userType === 'athlete' || (userType === 'coach' && userId !== queryId)) throw new UnauthorizedException();
+        if(userType === 'athlete') throw new UnauthorizedException();
+        if(userType === 'coach' && userId !== queryId) throw new UnauthorizedException();
         const coach = await this.prisma.coach.findUnique({
             where: {
                 id: queryId
@@ -145,7 +146,8 @@ export class CoachesService {
         userId: number,
         queryId: number
     ) {
-        if(userType === 'athlete' || (userType === 'coach' && userId !== queryId)) throw new UnauthorizedException();
+        if(userType === 'athlete') throw new UnauthorizedException();
+        if(userType === 'coach' && userId !== queryId) throw new UnauthorizedException();
         const coach = await this.prisma.coach.findUnique({
             where: {
                 id: queryId
