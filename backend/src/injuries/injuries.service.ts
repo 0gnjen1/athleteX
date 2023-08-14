@@ -6,25 +6,25 @@ export class InjuriesService {
 
     constructor(private readonly prisma: PrismaService){}
 
-    async createInjury(type: string){
+    async createInjury(injuryType: string){
         return await this.prisma.injury.create({
             data: {
-                type: type
+                type: injuryType
             }
         });
     }
 
     async getAllInjuries(page: number, pgsize: number){
         return await this.prisma.injury.findMany({
-            take: page,
             skip: (page-1)*pgsize,
+            take: pgsize,
             orderBy: {
                 type: 'asc'
             }
         });
     }
 
-    async getInjuriesById(injuryId: number){
+    async getInjuryById(injuryId: number){
         const injury = await this.prisma.injury.findUnique({
             where: {
                 id: injuryId
@@ -32,6 +32,23 @@ export class InjuriesService {
         });
         if(injury === null) throw new NotFoundException();
         return injury;
+    }
+
+    async updateInjury(injuryId: number, injuryType: string){
+        const injury = await this.prisma.injury.findUnique({
+            where: {
+                id: injuryId
+            }
+        });
+        if(injury === null) throw new NotFoundException();
+        return await this.prisma.injury.update({
+            where: {
+                id: injuryId
+            },
+            data: {
+                type: injuryType
+            }
+        });
     }
 
 }
