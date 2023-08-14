@@ -6,18 +6,25 @@ import { CoachesModule } from '../coaches/coaches.module';
 import { AthletesModule } from '../athletes/athletes.module';
 import { AuthModule } from '../auth/auth.module';
 import { AdminsModule } from '../admins/admins.module';
+import { InjuriesModule } from 'src/injuries/injuries.module';
 
 @Module({
-  imports:      [ConfigModule.forRoot({
-                        envFilePath: '.env',
-                        isGlobal: true
-                    }),
-                    CoachesModule,
-                    AthletesModule,
-                    AuthModule,
-                    AdminsModule
-                ],
-  controllers:  [AppController],
-  providers:    [AppService],
+    imports:  [
+        ConfigModule.forRoot({
+            envFilePath: '.env',
+                isGlobal: true
+            }),
+        CoachesModule,
+        AthletesModule,
+        AuthModule,
+        AdminsModule,
+        InjuriesModule
+    ],
+    controllers: [
+        AppController
+    ],
+    providers: [
+        AppService
+    ],
 })
 export class AppModule {}
