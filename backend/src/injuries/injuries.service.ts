@@ -4,17 +4,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class InjuriesService {
 
-    constructor(private readonly prisma: PrismaService){}
+    constructor(
+        private readonly prisma: PrismaService
+    ){}
 
-    async createInjury(injuryType: string){
-        return await this.prisma.injury.create({
-            data: {
-                type: injuryType
-            }
-        });
-    }
-
-    async getAllInjuries(page: number, pgsize: number){
+    async getAllInjuries(
+        page: number,
+        pgsize: number
+    ){
         return await this.prisma.injury.findMany({
             skip: (page-1)*pgsize,
             take: pgsize,
@@ -24,7 +21,9 @@ export class InjuriesService {
         });
     }
 
-    async getInjuryById(injuryId: number){
+    async getInjuryById(
+        injuryId: number
+    ){
         const injury = await this.prisma.injury.findUnique({
             where: {
                 id: injuryId
@@ -34,7 +33,20 @@ export class InjuriesService {
         return injury;
     }
 
-    async updateInjury(injuryId: number, injuryType: string){
+    async createInjury(
+        injuryType: string
+    ){
+        return await this.prisma.injury.create({
+            data: {
+                type: injuryType
+            }
+        });
+    }
+
+    async updateInjury(
+        injuryId: number,
+        injuryType: string
+    ){
         const injury = await this.prisma.injury.findUnique({
             where: {
                 id: injuryId
@@ -51,7 +63,9 @@ export class InjuriesService {
         });
     }
 
-    async removeInjury(injuryId: number){
+    async removeInjury(
+        injuryId: number
+    ){
         const injury = await this.prisma.injury.findUnique({
             where: {
                 id: injuryId
