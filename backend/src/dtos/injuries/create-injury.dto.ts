@@ -1,10 +1,10 @@
-import { IsAlpha, IsNotEmpty, MaxLength } from "class-validator";
+import { IsNotEmpty, MaxLength } from "class-validator";
 
 
 export class CreateInjuryDto {
 
     @IsNotEmpty()
-    @MaxLength(128)
+    @MaxLength(32)
     type: string;
 
 }

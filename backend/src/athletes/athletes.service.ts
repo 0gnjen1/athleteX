@@ -5,9 +5,16 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class AthletesService {
 
-    constructor(private prisma: PrismaService){}
+    constructor(
+        private readonly prisma: PrismaService
+    ){}
   
-    async findAll(userType: string, userId: number, page: number, pgsize: number) {
+    async findAllAthletes(
+        userType: string,
+        userId: number,
+        page: number,
+        pgsize: number
+    ){
         if(userType === "admin"){
             return this.prisma.athlete.findMany({
                 skip: (page-1)*pgsize,
@@ -45,7 +52,11 @@ export class AthletesService {
         throw new UnauthorizedException();
     }
   
-    async findOne(userType: string, userId: number, queryId: number) {
+    async findAthleteById(
+        userType: string,
+        userId: number,
+        queryId: number
+    ){
         if(userType === "admin" || (userType === "athlete" && userId === queryId)){
             const athlete = await this.prisma.athlete.findUnique({
                 where:{
@@ -87,7 +98,12 @@ export class AthletesService {
         throw new BadRequestException();
     }
   
-    async update(userType: string, userId: number, queryId: number, updateAthleteDto: UpdateAthleteDto) {
+    async updateAthlete(
+        userType: string,
+        userId: number,
+        queryId: number,
+        updateAthleteDto: UpdateAthleteDto
+    ){
         if(userType === 'coach' || (userType === 'athlete' && userId !== queryId)) throw new UnauthorizedException();
         const athlete = await this.prisma.athlete.findUnique({
             where: {
@@ -108,7 +124,11 @@ export class AthletesService {
         });
     }
   
-    async remove(userType: string, userId: number, queryId: number) {
+    async removeAthlete(
+        userType: string,
+        userId: number,
+        queryId: number
+    ){
         if(userType === "coach" || (userType === "athlete" && userId !== queryId)) throw new UnauthorizedException();
         const athlete = await this.prisma.athlete.findUnique({
             where: {
@@ -127,7 +147,11 @@ export class AthletesService {
         return;
     }
 
-    async setCoach(userType:string, athleteId: number, coachId: number){
+    async setAthletesCoach(
+        userType: string,
+        athleteId: number,
+        coachId: number
+    ){
         if(userType !== "admin") throw new UnauthorizedException();
         await this.prisma.coach.update({
             where: {
@@ -144,7 +168,10 @@ export class AthletesService {
         return;
     }
 
-    async removeCoach(userType: string, queryId: number){
+    async removeAthletesCoach(
+        userType: string,
+        queryId: number
+    ){
         if(userType !== "admin") throw new UnauthorizedException();
         await this.prisma.athlete.update({
             where: {

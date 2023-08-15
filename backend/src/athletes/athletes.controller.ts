@@ -9,14 +9,18 @@ import { User } from 'src/decorators/users/user-from-req.decorator';
 @Controller('athletes')
 export class AthletesController {
 
-    constructor(private readonly athletesService: AthletesService) {}
+    constructor(
+        private readonly athletesService: AthletesService
+    ){}
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    async findAll(  @User() user,
-                    @Query('page', PagePipe) page: number,
-                    @Query('pgsize', PageSizePipe) pgsize: number) {
-        return await this.athletesService.findAll(
+    async findAllAthletes(
+        @User() user,
+        @Query('page', PagePipe) page: number,
+        @Query('pgsize', PageSizePipe) pgsize: number
+    ){
+        return await this.athletesService.findAllAthletes(
             user.type,
             user.id, page,
             pgsize
@@ -25,9 +29,11 @@ export class AthletesController {
 
     @UseGuards(JwtAuthGuard)
     @Get(':id')
-    async findOne(  @User() user,
-                    @Param('id', ParseIntPipe) queryId: number) {
-        return await this.athletesService.findOne(
+    async findAthleteById(
+        @User() user,
+        @Param('id', ParseIntPipe) queryId: number
+    ){
+        return await this.athletesService.findAthleteById(
             user.type,
             user.id,
             queryId
@@ -36,10 +42,12 @@ export class AthletesController {
   
     @UseGuards(JwtAuthGuard)
     @Patch(':id')
-    async update(   @User() user,
-                    @Param('id', ParseIntPipe) queryId: number,
-                    @Body() updateAthleteDto: UpdateAthleteDto) {
-        return await this.athletesService.update(
+    async updateAthlete(
+        @User() user,
+        @Param('id', ParseIntPipe) queryId: number,
+        @Body() updateAthleteDto: UpdateAthleteDto
+    ){
+        return await this.athletesService.updateAthlete(
             user.type,
             user.id,
             queryId,
@@ -49,9 +57,11 @@ export class AthletesController {
   
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
-    async remove(   @User() user,
-                    @Param('id', ParseIntPipe) queryId: number) {
-        return await this.athletesService.remove(
+    async removeAthlete(
+        @User() user,
+        @Param('id', ParseIntPipe) queryId: number
+    ){
+        return await this.athletesService.removeAthlete(
             user.type,
             user.id,
             queryId
@@ -60,10 +70,12 @@ export class AthletesController {
   
     @UseGuards(JwtAuthGuard)
     @Post(':athleteid/setcoach/:coachid')
-    async setCoach( @User() user,
-                    @Param('athleteid', ParseIntPipe) athleteId: number,
-                    @Param('coachid', ParseIntPipe) coachId: number){
-        return await this.athletesService.setCoach(
+    async setAthletesCoach(
+        @User() user,
+        @Param('athleteid', ParseIntPipe) athleteId: number,
+        @Param('coachid', ParseIntPipe) coachId: number
+    ){
+        return await this.athletesService.setAthletesCoach(
             user.type,
             athleteId,
             coachId
@@ -72,9 +84,11 @@ export class AthletesController {
 
     @UseGuards(JwtAuthGuard)
     @Post(':id/removecoach')
-    async removeCoach(  @User() user,
-                        @Param('id', ParseIntPipe) queryId: number){
-        return await this.athletesService.removeCoach(
+    async removeAthletesCoach(
+        @User() user,
+        @Param('id', ParseIntPipe) queryId: number
+    ){
+        return await this.athletesService.removeAthletesCoach(
             user.type,
             queryId
         );

@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalCoachGuard } from './guards/local.coach.guard';
 import { LocalAthleteGuard } from './guards/local.athlete.guard';
@@ -10,10 +10,14 @@ import { CreateAdminDto } from 'src/dtos/admins/create-admin.dto';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService){}
+    constructor(
+        private readonly authService: AuthService
+    ){}
 
     @Post('register/admins')
-    registerAdmin(@Body() createAdminDto: CreateAdminDto){
+    registerAdmin(
+        @Body() createAdminDto: CreateAdminDto
+    ){
         return this.authService.registerAdmin(
             createAdminDto.name,
             createAdminDto.email,
@@ -23,7 +27,9 @@ export class AuthController {
     }
 
     @Post('register/athletes')
-    registerAthlete(@Body() createAthleteDto: CreateAthleteDto){
+    registerAthlete(
+        @Body() createAthleteDto: CreateAthleteDto
+    ){
         return this.authService.registerAthlete(
             createAthleteDto.name,
             createAthleteDto.email,
@@ -32,7 +38,9 @@ export class AuthController {
     }
 
     @Post('register/coaches')
-    registerCoach(@Body() createCoachDto: CreateCoachDto){
+    registerCoach(
+        @Body() createCoachDto: CreateCoachDto
+    ){
         return this.authService.registerCoach(
             createCoachDto.name,
             createCoachDto.email,
@@ -42,7 +50,9 @@ export class AuthController {
 
     @UseGuards(LocalAthleteGuard)
     @Post('login/athletes')
-    athleteLogin(@User() user){
+    athleteLogin(
+        @User() user
+    ){
         return this.authService.login(
             user.id,
             user.type
@@ -51,7 +61,9 @@ export class AuthController {
 
     @UseGuards(LocalAdminGuard)
     @Post('login/admins')
-    adminLogin(@User() user){
+    adminLogin(
+        @User() user
+    ){
         return this.authService.login(
             user.id,
             user.type
@@ -60,7 +72,9 @@ export class AuthController {
 
     @UseGuards(LocalCoachGuard)
     @Post('login/coaches')
-    coachLogin(@User() user){
+    coachLogin(
+        @User() user
+    ){
         return this.authService.login(
             user.id,
             user.type

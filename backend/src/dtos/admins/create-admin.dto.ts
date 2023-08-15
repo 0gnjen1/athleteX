@@ -12,9 +12,11 @@ export class CreateAdminDto {
     email: string;
 
     @MinLength(8)
+    @MaxLength(512)
     password: string;
 
     @IsString()
+    @MaxLength(2048)
     key: string;
 
 }

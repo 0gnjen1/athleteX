@@ -20,7 +20,7 @@ export class InjuriesController {
         @Query('page', PagePipe) page: number,
         @Query('pgsize', PageSizePipe) pgsize: number
     ){
-        return await this.injuriesService.getAllInjuries(
+        return await this.injuriesService.findAllInjuries(
             page,
             pgsize
         );
@@ -28,10 +28,10 @@ export class InjuriesController {
 
     @UseGuards(JwtAuthGuard)
     @Get(':injuryid')
-    async findOneInjury(
+    async findInjuryById(
         @Param('injuryid', ParseIntPipe) injuryQueryId: number
     ){
-        return await this.injuriesService.getInjuryById(
+        return await this.injuriesService.findInjuryById(
             injuryQueryId
         );
     }
@@ -58,7 +58,6 @@ export class InjuriesController {
         if(user.type !== "admin") throw new UnauthorizedException();
         return await this.injuriesService.updateInjury(injuryQueryId, updateInjuryDto.type);
     }
-
 
     @UseGuards(JwtAuthGuard)
     @Delete(":injuryid")

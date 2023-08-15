@@ -12,6 +12,7 @@ export class CreateCoachDto {
     email: string;
 
     @MinLength(8)
+    @MaxLength(512)
     password: string;
 
 }

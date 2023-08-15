@@ -9,14 +9,18 @@ import { User } from 'src/decorators/users/user-from-req.decorator';
 @Controller('admins')
 export class AdminsController {
     
-    constructor(private readonly adminsService: AdminsService) {}
+    constructor(
+        private readonly adminsService: AdminsService
+    ){}
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    async findAll(  @User() user,
-                    @Query('page', PagePipe) page: number,
-                    @Query('pgsize', PageSizePipe) pgsize: number) {
-        return await this.adminsService.findAll(
+    async findAllAdmins(
+        @User() user,
+        @Query('page', PagePipe) page: number,
+        @Query('pgsize', PageSizePipe) pgsize: number
+    ){
+        return await this.adminsService.findAllAdmins(
             user.type,
             page,
             pgsize
@@ -25,9 +29,11 @@ export class AdminsController {
 
     @UseGuards(JwtAuthGuard)
     @Get(':id')
-    async findOne(  @User() user,
-                    @Param('id', ParseIntPipe) queryId: number) {
-        return await this.adminsService.findOne(
+    async findAdminById(
+        @User() user,
+        @Param('id', ParseIntPipe) queryId: number
+    ){
+        return await this.adminsService.findAdminById(
             user.type,
             queryId
         );
@@ -35,10 +41,12 @@ export class AdminsController {
 
     @UseGuards(JwtAuthGuard)
     @Patch(':id')
-    async update(   @User() user,
-                    @Param('id', ParseIntPipe) queryId: number,
-                    @Body() updateAdminDto: UpdateAdminDto) {
-        return await this.adminsService.update(
+    async updateAdmin(
+        @User() user,
+        @Param('id', ParseIntPipe) queryId: number,
+        @Body() updateAdminDto: UpdateAdminDto
+    ){
+        return await this.adminsService.updateAdmin(
             user.type,
             user.id,
             queryId,
@@ -48,9 +56,11 @@ export class AdminsController {
 
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
-    async remove(   @User() user,
-                    @Param('id', ParseIntPipe) queryId: number) {
-        return await this.adminsService.remove(
+    async removeAdmin(
+        @User() user,
+        @Param('id', ParseIntPipe) queryId: number
+    ){
+        return await this.adminsService.removeAdmin(
             user.type,
             user.id,
             queryId

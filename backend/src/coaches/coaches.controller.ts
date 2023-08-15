@@ -10,7 +10,10 @@ import { UpdateNotificationDto } from 'src/dtos/notifications/update-notificatio
 
 @Controller('coaches')
 export class CoachesController {
-    constructor(private readonly coachesService: CoachesService) {}
+
+    constructor(
+        private readonly coachesService: CoachesService
+    ){}
 
     @UseGuards(JwtAuthGuard)
     @Get()
@@ -29,11 +32,11 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Get(':coachid')
-    async findOneCoach(
+    async findCoachById(
         @User() user,
         @Param('coachid', ParseIntPipe) coachQueryId: number
     ){
-        return await this.coachesService.findOneCoach(
+        return await this.coachesService.findCoachById(
             user.type,
             user.id,
             coachQueryId
@@ -87,12 +90,12 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Get(':coachid/notifications/:notificationid')
-    async findOneNotification(
+    async findNotificationById(
         @User() user,
         @Param('coachid', ParseIntPipe) coachQueryId: number,
         @Param('notificationid', ParseIntPipe) notificationQueryId: number
     ){
-        return await this.coachesService.findOneNotification(
+        return await this.coachesService.findNotificationById(
             user.type,
             user.id,
             coachQueryId,
@@ -107,7 +110,7 @@ export class CoachesController {
         @Param('coachid', ParseIntPipe) coachQueryId: number,
         @Body() createNotificationDto: CreateNotificationDto
     ){
-        return await this.coachesService.addNotification(
+        return await this.coachesService.createNotification(
             user.type,
             user.id,
             coachQueryId,
@@ -118,13 +121,13 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Post(':coachid/notifications/:notificationid')
-    updateNotification(
+    async updateNotification(
         @User() user,
         @Param('coachid', ParseIntPipe) coachQueryId: number,
         @Param('notificationid', ParseIntPipe) notificationQueryId: number,
         @Body() updateNotificationDto: UpdateNotificationDto
     ){
-        return this.coachesService.updateNotification(
+        return await this.coachesService.updateNotification(
             user.type,
             user.id,
             coachQueryId,
@@ -135,12 +138,12 @@ export class CoachesController {
 
     @UseGuards(JwtAuthGuard)
     @Delete(':coachid/notifications/:notificationid')
-    removeNotification(
+    async removeNotification(
         @User() user,
         @Param('coachid', ParseIntPipe) coachQueryId: number,
         @Param('notificationid', ParseIntPipe) notificationQueryId: number,
     ){
-        return this.coachesService.removeNotification(
+        return await this.coachesService.removeNotification(
             user.type,
             user.id,
             coachQueryId,

@@ -2,6 +2,7 @@ import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from
 
 @Injectable()
 export class PageSizePipe implements PipeTransform{
+
     constructor(){}
 
     transform(value: any, metadata: ArgumentMetadata) {
@@ -11,4 +12,5 @@ export class PageSizePipe implements PipeTransform{
         if(value < 1 || value > 40) throw new BadRequestException();
         return value;
     }
+    
 }

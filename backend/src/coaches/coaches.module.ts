@@ -5,9 +5,15 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
-  controllers:  [CoachesController],
-  providers:    [CoachesService],
-  imports:      [PrismaModule,
-                    NotificationsModule]
+    controllers: [
+        CoachesController
+    ],
+    providers: [
+        CoachesService
+    ],
+    imports: [
+        PrismaModule,
+        NotificationsModule
+    ]
 })
 export class CoachesModule {}

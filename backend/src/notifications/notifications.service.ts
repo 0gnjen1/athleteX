@@ -5,13 +5,15 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class NotificationsService {
 
-    constructor(private prisma: PrismaService){}
+    constructor(
+        private readonly prisma: PrismaService
+    ){}
 
     async findAllNotifications(
         coachId: number,
         page: number,
         pgsize: number
-    ) {
+    ){
         return await this.prisma.notifications.findMany({
             skip: (page-1)*pgsize,
             take: pgsize,
@@ -27,10 +29,10 @@ export class NotificationsService {
         });
     }
 
-    async findOneNotification(
+    async findNotificationById(
         coachId: number,
         notificationId: number
-    ) {
+    ){
         const notification = await this.prisma.$queryRaw`
             SELECT *
             FROM Notifications
@@ -46,7 +48,7 @@ export class NotificationsService {
         coachId: number,
         title: string,
         content: string
-    ) {
+    ){
         const coach = await this.prisma.coach.findUnique({
             where: {
                 id: coachId
@@ -73,7 +75,7 @@ export class NotificationsService {
         coachId: number,
         notificationId: number,
         updateNotificationDto: UpdateNotificationDto
-    ) {
+    ){
         const notification = await this.prisma.$queryRaw`
             SELECT *
             FROM Notifications
@@ -93,7 +95,7 @@ export class NotificationsService {
     async removeNotification(
         coachId: number,
         notificationId: number
-    ) {
+    ){
         const notification = await this.prisma.$queryRaw`
             SELECT *
             FROM Notifications
@@ -112,7 +114,7 @@ export class NotificationsService {
     
     async removeAllNotification(
         coachId: number
-    ) {
+    ){
         await this.prisma.notifications.deleteMany({
             where: {
               coach_id: coachId

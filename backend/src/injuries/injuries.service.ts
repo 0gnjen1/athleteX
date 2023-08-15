@@ -8,7 +8,7 @@ export class InjuriesService {
         private readonly prisma: PrismaService
     ){}
 
-    async getAllInjuries(
+    async findAllInjuries(
         page: number,
         pgsize: number
     ){
@@ -21,7 +21,7 @@ export class InjuriesService {
         });
     }
 
-    async getInjuryById(
+    async findInjuryById(
         injuryId: number
     ){
         const injury = await this.prisma.injury.findUnique({

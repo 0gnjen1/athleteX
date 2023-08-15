@@ -20,7 +20,7 @@ export class ExercisesController {
         @Query('page', PagePipe) page: number,
         @Query('pgsize', PageSizePipe) pgsize: number
     ){
-        return await this.exercisesService.getAllExercises(
+        return await this.exercisesService.findAllExercises(
             page,
             pgsize
         );
@@ -28,22 +28,22 @@ export class ExercisesController {
 
     @UseGuards(JwtAuthGuard)
     @Get(':exerciseid')
-    async findOneExercise(
+    async findExerciseById(
         @Param('exerciseid', ParseIntPipe) exerciseQueryId: number
     ){
-        return await this.exercisesService.getExerciseById(
+        return await this.exercisesService.findExerciseById(
             exerciseQueryId
         );
     }
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    create(
+    async createExercise(
         @User() user,
         @Body() createExerciseDto: CreateExerciseDto
     ){
         if(user.type !== "admin") throw new UnauthorizedException();
-        return this.exercisesService.createExercise(createExerciseDto.type);
+        return await this.exercisesService.createExercise(createExerciseDto.type);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -53,6 +53,7 @@ export class ExercisesController {
         @Param('exerciseid', ParseIntPipe) exerciseQueryId: number,
         @Body() updateExerciseDto: UpdateExerciseDto
     ){
+        if(user.type !== "admin") throw new UnauthorizedException();
         return this.exercisesService.updateExercise(exerciseQueryId, updateExerciseDto.type);
     }
 

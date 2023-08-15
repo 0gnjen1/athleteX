@@ -1,7 +1,8 @@
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
 
 @Injectable()
-export class PagePipe implements PipeTransform{
+export class PagePipe implements PipeTransform {
+
     constructor(){}
 
     transform(value: any, metadata: ArgumentMetadata) {
@@ -11,4 +12,5 @@ export class PagePipe implements PipeTransform{
         if(value < 1 || value > 1000000000) throw new BadRequestException();
         return value;
     }
+    
 }

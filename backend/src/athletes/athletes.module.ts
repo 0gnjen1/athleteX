@@ -4,8 +4,14 @@ import { AthletesController } from './athletes.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-    controllers:  [AthletesController],
-    providers:    [AthletesService],
-    imports:      [PrismaModule]
+    controllers: [
+        AthletesController
+    ],
+    providers: [
+        AthletesService
+    ],
+    imports: [
+        PrismaModule
+    ]
 })
 export class AthletesModule {}

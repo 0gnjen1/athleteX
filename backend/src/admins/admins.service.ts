@@ -5,9 +5,15 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class AdminsService {
 
-    constructor(private prisma: PrismaService){}
+    constructor(
+        private readonly prisma: PrismaService
+    ){}
 
-    async findAll(userType: string, page: number, pgsize: number) {
+    async findAllAdmins(
+        userType: string,
+        page: number,
+        pgsize: number
+    ){
         if(userType !== "admin") throw new UnauthorizedException();
         return await this.prisma.admin.findMany({
             skip: (page-1)*pgsize,
@@ -20,7 +26,10 @@ export class AdminsService {
         });
     }
 
-    async findOne(userType: string, queryId: number) {
+    async findAdminById(
+        userType: string,
+        queryId: number
+    ){
         if(userType !== "admin") throw new UnauthorizedException();
         const admin = await this.prisma.admin.findUnique({
             where:  {
@@ -36,7 +45,12 @@ export class AdminsService {
         return admin;
     }
 
-    async update(userType: string, userId: number, queryId: number, updateAdminDto: UpdateAdminDto) {
+    async updateAdmin(
+        userType: string,
+        userId: number,
+        queryId: number,
+        updateAdminDto: UpdateAdminDto
+    ){
         if(userType !== "admin" || userId !== queryId) throw new UnauthorizedException();
         const admin = await this.prisma.admin.findUnique({
             where: {
@@ -62,7 +76,11 @@ export class AdminsService {
         });
     }
     
-    async remove(userType: string, userId: number, queryId: number) {
+    async removeAdmin(
+        userType: string,
+        userId: number,
+        queryId: number
+    ){
         if(userType !== "admin" || userId !== queryId) throw new UnauthorizedException();
         const admin = await this.prisma.admin.findUnique({
             where: {

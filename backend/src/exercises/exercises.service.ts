@@ -1,6 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateExerciseDto } from '../dtos/exercises/create-exercise.dto';
-import { UpdateExerciseDto } from '../dtos/exercises/update-exercise.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -10,7 +8,7 @@ export class ExercisesService {
         private readonly prisma: PrismaService
     ){}
 
-    async getAllExercises(
+    async findAllExercises(
         page: number,
         pgsize: number
     ){
@@ -23,7 +21,7 @@ export class ExercisesService {
         });
     }
 
-    async getExerciseById(
+    async findExerciseById(
         exerciseId: number
     ){
         const exercise = await this.prisma.exercise.findUnique({

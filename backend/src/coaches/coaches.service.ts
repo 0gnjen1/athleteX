@@ -2,15 +2,14 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { UpdateCoachDto } from '../dtos/coaches/update-coach.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from 'src/notifications/notifications.service';
-import { CreateNotificationDto } from 'src/dtos/notifications/create-notification.dto';
 import { UpdateNotificationDto } from 'src/dtos/notifications/update-notification.dto';
 
 @Injectable()
 export class CoachesService {
 
     constructor(
-        private prisma: PrismaService,
-        private notificationService: NotificationsService
+        private readonly prisma: PrismaService,
+        private readonly notificationService: NotificationsService
     ){}
 
     async findAllCoaches(
@@ -18,7 +17,7 @@ export class CoachesService {
         userId: number,
         page: number,
         pgsize: number
-    ) {
+    ){
         if(userType === 'admin'){
             return await this.prisma.coach.findMany({
                 skip: (page-1)*pgsize,
@@ -63,11 +62,11 @@ export class CoachesService {
         throw new UnauthorizedException();
     }
 
-    async findOneCoach(
+    async findCoachById(
         userType: string,
         userId: number,
         queryId: number
-    ) {
+    ){
         if(userType === 'admin' || (userType === 'coach' && userId === queryId)){
             const coach = await this.prisma.coach.findUnique({
                 where:{
@@ -119,7 +118,7 @@ export class CoachesService {
         userId: number,
         queryId: number,
         updateCoachDto: UpdateCoachDto
-    ) {
+    ){
         if(userType === 'athlete') throw new UnauthorizedException();
         if(userType === 'coach' && userId !== queryId) throw new UnauthorizedException();
         const coach = await this.prisma.coach.findUnique({
@@ -145,7 +144,7 @@ export class CoachesService {
         userType: string,
         userId: number,
         queryId: number
-    ) {
+    ){
         if(userType === 'athlete') throw new UnauthorizedException();
         if(userType === 'coach' && userId !== queryId) throw new UnauthorizedException();
         const coach = await this.prisma.coach.findUnique({
@@ -189,7 +188,7 @@ export class CoachesService {
         return await this.notificationService.findAllNotifications(coachQueryId, page, pgsize)
     }
 
-    async findOneNotification(
+    async findNotificationById(
         userType: string,
         userId: number,
         coachQueryId: number,
@@ -208,10 +207,10 @@ export class CoachesService {
             if(athlete === null) throw new UnauthorizedException();
             if(athlete.coach_id !== coachQueryId) throw new UnauthorizedException();
         }
-        return await this.notificationService.findOneNotification(coachQueryId, notificationQueryId);
+        return await this.notificationService.findNotificationById(coachQueryId, notificationQueryId);
     }
 
-    async addNotification(
+    async createNotification(
         userType: string,
         userId: number,
         coachQueryId: number,

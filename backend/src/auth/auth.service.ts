@@ -5,15 +5,19 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-    constructor(private prisma: PrismaService, private jwtService: JwtService){}
+
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly jwtService: JwtService
+    ){}
 
     async registerAdmin(
         name: string,
         email: string,
         password: string, 
         key: string
-    ) {
-        if( key !== process.env.ADMINKEY ) throw new UnauthorizedException();
+    ){
+        if(key !== process.env.ADMINKEY) throw new UnauthorizedException();
         const emailAlreadyInDatabase = await this.prisma.admin.findUnique({
             where: {
                 email: email
@@ -35,7 +39,7 @@ export class AuthService {
                 name: true,
                 email: true
             }
-        })
+        });
         return admin;
     }
 
@@ -43,7 +47,7 @@ export class AuthService {
         name: string,
         email: string,
         password: string
-    ) {
+    ){
         const emailAlreadyInDatabase = await this.prisma.athlete.findUnique({
             where: {
                 email: email
@@ -75,7 +79,7 @@ export class AuthService {
         name: string,
         email: string,
         password: string
-    ) {
+    ){
         const emailAlreadyInDatabase = await this.prisma.coach.findUnique({
             where: {
                 email: email

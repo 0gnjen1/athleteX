@@ -10,20 +10,28 @@ import { LocalAdminStrategy } from './strategies/local.admin.strategy';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  providers:    [AuthService,
-                    LocalAthleteStrategy,
-                    LocalCoachStrategy,
-                    LocalAdminStrategy,
-                    JwtStrategy
-                ],
-  imports:      [PassportModule,
-                    PrismaModule,
-                    JwtModule.register({
-                        secret: process.env.JWTKEY,
-                        signOptions: { expiresIn: '2592000s' } // 30 days
-                    })
-				],
-  controllers:  [AuthController],
-  exports:      [AuthModule]
+    providers: [
+        AuthService,
+        LocalAthleteStrategy,
+        LocalCoachStrategy,
+        LocalAdminStrategy,
+        JwtStrategy
+    ],
+    imports: [
+        PassportModule,
+        PrismaModule,
+        JwtModule.register({
+            secret: process.env.JWTKEY,
+            signOptions: {
+                expiresIn: '2592000s' /* 30 days */
+            }
+        })
+	],
+    controllers: [
+        AuthController
+    ],
+    exports: [
+        AuthModule
+    ]
 })
 export class AuthModule {}
