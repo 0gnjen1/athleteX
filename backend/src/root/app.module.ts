@@ -7,6 +7,7 @@ import { AthletesModule } from '../athletes/athletes.module';
 import { AuthModule } from '../auth/auth.module';
 import { AdminsModule } from '../admins/admins.module';
 import { InjuriesModule } from 'src/injuries/injuries.module';
+import { ExercisesModule } from 'src/exercises/exercises.module';
 
 @Module({
     imports:  [
@@ -18,7 +19,8 @@ import { InjuriesModule } from 'src/injuries/injuries.module';
         AthletesModule,
         AuthModule,
         AdminsModule,
-        InjuriesModule
+        InjuriesModule,
+        ExercisesModule
     ],
     controllers: [
         AppController
