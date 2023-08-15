@@ -51,4 +51,19 @@ export class InjuriesService {
         });
     }
 
+    async removeInjury(injuryId: number){
+        const injury = await this.prisma.injury.findUnique({
+            where: {
+                id: injuryId
+            }
+        });
+        if(injury === null) throw new NotFoundException();
+        await this.prisma.injury.delete({
+            where: {
+                id: injuryId
+            }
+        });
+        return;
+    }
+
 }
